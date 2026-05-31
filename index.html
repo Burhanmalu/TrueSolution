@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrueSolution — Building Digital Solutions That Drive Business Growth</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="TrueSolution is an elite software development agency. We build luxury-tier web applications, mobile apps, and custom software that drive business growth.">
+  <meta name="keywords" content="Software Agency, Web Development, Custom Software, UI/UX Design, App Development, Cloud Solutions, Luxury Agency">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ─── Color & Token Definitions ────────────────────────── */
+    :root {
+      --color-bg: #0D0A07;
+      --color-primary: #C9A96E;
+      --color-secondary: #E8D5B0;
+      --color-card-bg: #13100C;
+      --color-card-bg-alt: #1A1510;
+      --color-card-service-bg: #131820;
+      --color-text: #F5ECD7;
+      --color-muted: #8A7A68;
+      --color-border: rgba(201, 169, 110, 0.15);
+      --color-border-glow: rgba(201, 169, 110, 0.35);
+      --color-glow: rgba(201, 169, 110, 0.08);
+      --color-glow-btn: rgba(201, 169, 110, 0.4);
+    }
+
+    /* ─── Global Reset & Base Styles ───────────────────────── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    /* ─── Luxury Texture Overlay ─── */
+    .noise-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      content: "";
+      opacity: 0.03;
+      z-index: 9999;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── Typography Defaults ─── */
+    h1, h2, h3, .font-serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Shared Layout Elements ─── */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-padding {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    /* ─── Radial Glow Gradients ─── */
+    .radial-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      height: 80vw;
+      max-width: 900px;
+      max-height: 900px;
+      background: radial-gradient(circle, var(--color-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Sticky Blurred Navbar ────────────────────────────── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      border-bottom: 1px solid var(--color-border);
+      background-color: rgba(13, 10, 7, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.4s ease;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 85px;
+    }
+
+    /* Logo structure */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--color-text);
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background-color: transparent;
+      border: 1px solid var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      color: var(--color-primary);
+      font-size: 1.2rem;
+      position: relative;
+      box-shadow: 0 0 10px rgba(201, 169, 110, 0.1);
+    }
+
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border: 1px solid rgba(201, 169, 110, 0.15);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .logo span {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+    }
+
+    .logo strong {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Navigation Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--color-primary);
+    }
+
+    /* ─── Buttons ────────────────────────────────────────── */
+    .btn {
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 14px 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      border: 1px solid var(--color-primary);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-secondary);
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 25px var(--color-glow-btn);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--color-primary);
+      background-color: rgba(201, 169, 110, 0.05);
+      color: var(--color-text);
+      transform: translateY(-2px);
+    }
+
+    /* Hamburger menu for mobile */
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      outline: none;
+    }
+
+    /* ─── Hero Section ─────────────────────────────────────── */
+    #hero {
+      min-h: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 130px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Editorial Tag Badge */
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 9999px;
+      padding: 6px 18px;
+      background-color: rgba(20, 16, 12, 0.4);
+      color: var(--color-primary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+      box-shadow: 0 0 8px var(--color-primary);
+    }
+
+    /* Headline Serifs */
+    .hero-title {
+      font-size: clamp(2.5rem, 5.5vw, 5.2rem);
+      line-height: 1.1;
+      font-weight: 300;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    .hero-title italic {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+    }
+
+    .camel-gradient {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      font-weight: 400;
+    }
+
+    .hero-desc {
+      font-size: clamp(1rem, 1.3vw, 1.25rem);
+      color: var(--color-muted);
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    /* ─── Emojis/Icons Slow Floating Badges ────────────────── */
+    .floating-badge {
+      position: absolute;
+      z-index: 5;
+      background: rgba(19, 16, 12, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .floating-badge span {
+      font-size: 1.4rem;
+    }
+
+    /* Infinite Floating Animations */
+    @keyframes float-slow-1 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(3deg); }
+    }
+    @keyframes float-slow-2 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(-3deg); }
+    }
+    @keyframes float-slow-3 {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(2deg); }
+    }
+
+    .badge-1 { top: 22%; left: 8%; animation: float-slow-1 6s ease-in-out infinite; }
+    .badge-2 { top: 15%; right: 9%; animation: float-slow-2 5s ease-in-out infinite; }
+    .badge-3 { bottom: 25%; left: 10%; animation: float-slow-3 7s ease-in-out infinite; }
+    .badge-4 { bottom: 20%; right: 7%; animation: float-slow-1 5.5s ease-in-out infinite; }
+    .badge-5 { top: 58%; right: 22%; animation: float-slow-2 6.5s ease-in-out infinite; }
+    .badge-6 { top: 62%; left: 24%; animation: float-slow-3 7.5s ease-in-out infinite; }
+
+    /* ─── Services Section ─────────────────────────────────── */
+    #services {
+      background-color: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 5rem;
+    }
+
+    .section-title {
+      font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+      color: white;
+    }
+
+    .section-desc {
+      color: var(--color-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Services responsive grid */
+    .services-grid {
+      display: grid;
+      grid-template-cols: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+
+    /* Service card structure */
+    .service-card {
+      background-color: var(--color-card-service-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 40px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .service-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 10% 10%, rgba(201, 169, 110, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Icon in rounded square */
+    .service-icon-box {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background-color: rgba(201, 169, 110, 0.08);
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .service-card h3 {
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .service-card p {
+      color: var(--color-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .service-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      transition: all 0.3s ease;
+    }
+
+    .service-link i {
+      transition: transform 0.3s ease;
+    }
+
+    /* Hover effects */
+    .service-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--color-border-glow);
+      box-shadow: 0 10px 40px rgba(201, 169, 110, 0.06);
+    }
+
+    .service-card:hover .service-icon-box {
+      background-color: var(--color-primary);
+      color: var(--color-bg);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(201, 169, 110, 0.25);
+    }
+
+    .service-card:hover .service-link i {
+      transform: translateX(4px);
+    }
+
+    /* ─── Why Choose Us Section ────────────────────────────── */
+    #why-choose {
+      background-color: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+
+    .why-container {
+      display: grid;
+      grid-template-cols: 1.1fr 0.9fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    /* Left - Features */
+    .why-left h2 {
+      font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 2rem;
+    }
+
+    .features-list {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 30px;
+      margin-top: 3.5rem;
+    }
+
+    .feature-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feature-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+    }
+
+    .feature-box h4 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--color-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .feature-box p {
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* Right - Stats Grid */
+    .why-right-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .stat-card {
+      background-color: var(--color-card-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 35px 25px;
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.8rem;
+      color: var(--color-primary);
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .stat-card h4 {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: white;
+      margin-top: 10px;
+    }
+
+    .stat-card p {
+      color: var(--color-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .stat-icon {
+      position: absolute;
+      top: 30px;
+      right: 25px;
+      color: rgba(201, 169, 110, 0.25);
+    }
+
+    /* Hover effect stats */
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--color-border-glow);
+      box-shadow: 0 10px 30px rgba(201, 169, 110, 0.05);
+    }
+
+    /* ─── Footer Section ───────────────────────────────────── */
+    footer {
+      background-color: #080604;
+      border-top: 1px solid var(--color-border);
+      padding: 80px 0 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-cols: 1.5fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .footer-about p {
+      color: var(--color-muted);
+      font-size: 0.95rem;
+      max-width: 320px;
+      margin-top: 1.2rem;
+      line-height: 1.7;
+    }
+
+    .footer-links h4 {
+      font-size: 1.1rem;
+      color: white;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links ul li a {
+      text-decoration: none;
+      color: var(--color-muted);
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links ul li a:hover {
+      color: var(--color-primary);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(201, 169, 110, 0.08);
+      padding-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom p {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .footer-bottom-links a {
+      text-decoration: none;
+      color: var(--color-muted);
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--color-primary);
+    }
+
+    /* ─── Scroll-slide Reveal Classes ─────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(35px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger helpers */
+    .delay-100 { transition-delay: 0.1s; }
+    .delay-200 { transition-delay: 0.2s; }
+    .delay-300 { transition-delay: 0.3s; }
+    .delay-400 { transition-delay: 0.4s; }
+
+    /* ─── Mobile Responsive Settings ───────────────────────── */
+    @media (max-width: 1024px) {
+      .why-container {
+        grid-template-cols: 1fr;
+        gap: 60px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-padding {
+        padding: 80px 0;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-cta {
+        display: none;
+      }
+
+      .hamburger {
+        display: block;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .features-list {
+        grid-template-cols: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-cols: 1fr;
+        gap: 40px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .floating-badge {
+        display: none; /* Hide floating emojis on mobile to keep focus on text */
+      }
+    }
+
+    /* Mobile navigation overlay */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--color-bg);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      border-left: 1px solid var(--color-border);
+    }
+
+    .mobile-menu.active {
+      right: 0;
+    }
+
+    .mobile-menu a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      text-decoration: none;
+      color: var(--color-text);
+      transition: color 0.3s ease;
+    }
+
+    .mobile-menu a:hover {
+      color: var(--color-primary);
+    }
+
+    .mobile-menu-close {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Texture & Glow Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- Sticky blurred header -->
+  <header>
+    <div class="container nav-container">
+      <!-- Monogram Logo Badge -->
+      <a href="#hero" class="logo">
+        <div class="logo-badge">TS</div>
+        <span>True<strong>Solution</strong></span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#why-choose">Why Us</a>
+        <a href="#testimonials">Process</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <!-- Navigation CTA -->
+      <div class="nav-cta">
+        <a href="#contact" class="btn btn-primary">
+          Get Free Consultation
+        </a>
+      </div>
+
+      <!-- Hamburger mobile trigger -->
+      <button class="hamburger" id="hamburger-open">
+        <i data-lucide="menu" style="width: 26px; height: 26px;"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Drawer Overlay -->
+  <div class="mobile-menu" id="mobile-menu-drawer">
+    <button class="mobile-menu-close" id="hamburger-close">
+      <i data-lucide="x" style="width: 32px; height: 32px;"></i>
+    </button>
+    <a href="#hero" class="mobile-link">Home</a>
+    <a href="#services" class="mobile-link">Services</a>
+    <a href="#why-choose" class="mobile-link">Why Us</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+    <a href="#contact" class="btn btn-primary mt-4 mobile-link">Get Consultation</a>
+  </div>
+
+  <!-- ─── Hero Section ─────────────────────────────────────── -->
+  <section id="hero" class="section-padding">
+    <div class="radial-glow"></div>
+    
+    <!-- Floating Luxury Emojis/Badges -->
+    <div class="floating-badge badge-1"><span>🚀</span></div>
+    <div class="floating-badge badge-2"><span>⚡</span></div>
+    <div class="floating-badge badge-3"><span>💻</span></div>
+    <div class="floating-badge badge-4"><span>☁️</span></div>
+    <div class="floating-badge badge-5"><span>⚛️</span></div>
+    <div class="floating-badge badge-6"><span>📱</span></div>
+
+    <div class="container hero-content">
+      <!-- Editorial Tag Badge -->
+      <div class="tag-badge reveal delay-100">
+        <div class="tag-dot"></div>
+        Building Digital Solutions That Drive Business Growth
+      </div>
+
+      <!-- Massive Editorial Serif Headline -->
+      <h1 class="hero-title reveal delay-200">
+        Transforming Ideas Into<br>
+        <span class="camel-gradient"><italic>Powerful Digital Solutions</italic></span>
+      </h1>
+
+      <!-- Body Copy -->
+      <p class="hero-desc reveal delay-300">
+        We build bespoke web applications, mobile apps, and custom software that empower businesses to scale, automate, and lead in their industries.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="hero-actions reveal delay-400">
+        <a href="#contact" class="btn btn-primary">
+          <span>Get Free Consultation</span>
+          <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+        </a>
+        <a href="#services" class="btn btn-secondary">
+          <span>Explore Our Services</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Services Section ─────────────────────────────────── -->
+  <section id="services" class="section-padding">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="tag-badge">
+          <div class="tag-dot"></div>
+          Our Services
+        </div>
+        <h2 class="section-title">Everything You Need to <span class="font-serif italic" style="color: var(--color-primary);">Scale Digitally</span></h2>
+        <p class="section-desc">From strategy to deployment, we offer end-to-end software development services designed to drive measurable growth.</p>
+      </div>
+
+      <!-- Grid Layout -->
+      <div class="services-grid">
+        <!-- 1. Web Application Development -->
+        <div class="service-card reveal">
+          <div class="service-icon-box">
+            <i data-lucide="globe" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>Web Application Dev</h3>
+          <p>Scalable, high-performance web applications built using modern frameworks like React, Next.js, and Node.js.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+
+        <!-- 2. Mobile App Development -->
+        <div class="service-card reveal delay-100">
+          <div class="service-icon-box">
+            <i data-lucide="smartphone" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>Mobile App Dev</h3>
+          <p>Native and cross-platform mobile apps for iOS and Android delivering exceptional, intuitive user experiences.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+
+        <!-- 3. Custom Software Development -->
+        <div class="service-card reveal delay-200">
+          <div class="service-icon-box">
+            <i data-lucide="code-2" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>Custom Software</h3>
+          <p>Bespoke enterprise-grade systems tailored exactly to your unique company processes and automation workflows.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+
+        <!-- 4. UI/UX Design -->
+        <div class="service-card reveal">
+          <div class="service-icon-box">
+            <i data-lucide="palette" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>UI/UX Design</h3>
+          <p>Sophisticated, pixel-perfect user interfaces designed with an emphasis on conversion rate optimization and premium brand alignment.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+
+        <!-- 5. API Integration -->
+        <div class="service-card reveal delay-100">
+          <div class="service-icon-box">
+            <i data-lucide="zap" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>API Integration</h3>
+          <p>Robust, secure custom APIs and seamless integration with third-party software products to synchronize business data.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+
+        <!-- 6. Cloud Solutions -->
+        <div class="service-card reveal delay-200">
+          <div class="service-icon-box">
+            <i data-lucide="cloud" style="width: 24px; height: 24px;"></i>
+          </div>
+          <h3>Cloud Solutions</h3>
+          <p>Reliable cloud infrastructure development, hosting configuration, server monitoring, and advanced DevOps deployment pipelines.</p>
+          <a href="#contact" class="service-link">
+            <span>Learn More</span>
+            <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Why Choose Us Section ────────────────────────────── -->
+  <section id="why-choose" class="section-padding">
+    <div class="container why-container">
+      
+      <!-- Left side - Features -->
+      <div class="why-left reveal">
+        <div class="tag-badge">
+          <div class="tag-dot"></div>
+          Why Choose Us
+        </div>
+        <h2>Why Choose <span class="font-serif italic" style="color: var(--color-primary);">TrueSolution?</span></h2>
+        <p style="color: var(--color-muted); line-height: 1.8;">
+          We operate at the intersection of stunning luxury aesthetics and robust, bulletproof technology. We are not just service providers; we are your long-term technological co-pilots.
+        </p>
+
+        <div class="features-list">
+          <div class="feature-box">
+            <div class="feature-header">
+              <div class="feature-dot"></div>
+              <h4>Expert Team</h4>
+            </div>
+            <p>Industry-veteran engineers and visual architects dedicated to craft-level quality.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-header">
+              <div class="feature-dot"></div>
+              <h4>Agile Process</h4>
+            </div>
+            <p>Regular sprint releases, continuous communication, and complete delivery transparency.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-header">
+              <div class="feature-dot"></div>
+              <h4>Modern Stack</h4>
+            </div>
+            <p>Utilizing high-performance frameworks that guarantee maximum security and horizontal scale.</p>
+          </div>
+
+          <div class="feature-box">
+            <div class="feature-header">
+              <div class="feature-dot"></div>
+              <h4>Scalable Architecture</h4>
+            </div>
+            <p>Codebase structures built modularly, prepared to grow seamlessly with your customer base.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side - Stats -->
+      <div class="why-right-grid">
+        <!-- Stat 1 -->
+        <div class="stat-card reveal">
+          <i data-lucide="award" class="stat-icon" style="width: 20px; height: 20px;"></i>
+          <span class="stat-number">3+</span>
+          <h4>Years of Excellence</h4>
+          <p>Delivering high-value, bespoke software systems since 2021.</p>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="stat-card reveal delay-100">
+          <i data-lucide="check-circle" class="stat-icon" style="width: 20px; height: 20px;"></i>
+          <span class="stat-number">10+</span>
+          <h4>Projects Delivered</h4>
+          <p>Delivered on-time, fully audited, and visually flawless solutions.</p>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="stat-card reveal delay-200">
+          <i data-lucide="users" class="stat-icon" style="width: 20px; height: 20px;"></i>
+          <span class="stat-number">10+</span>
+          <h4>Happy Clients</h4>
+          <p>Transforming enterprise and fast-growing startup operations globally.</p>
+        </div>
+
+        <!-- Stat 4 -->
+        <div class="stat-card reveal delay-300">
+          <i data-lucide="headphones" class="stat-icon" style="width: 20px; height: 20px;"></i>
+          <span class="stat-number">24/7</span>
+          <h4>Dedicated Support</h4>
+          <p>Round-the-clock coverage, secure monitoring, and rapid engineering responses.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── Contact Section ───────────────────────────────────── -->
+  <section id="contact" class="section-padding" style="border-bottom: 1px solid var(--color-border);">
+    <div class="radial-glow"></div>
+    <div class="container" style="position: relative; z-index: 10;">
+      <div class="section-header reveal">
+        <div class="tag-badge">
+          <div class="tag-dot"></div>
+          Contact Us
+        </div>
+        <h2 class="section-title">Let's Build Something <span class="font-serif italic" style="color: var(--color-primary);">Exceptional</span></h2>
+        <p class="section-desc">Get in touch today to schedule your complimentary strategy session and project estimation consultation.</p>
+      </div>
+
+      <div style="max-width: 650px; margin: 0 auto;" class="reveal delay-100">
+        <form style="background-color: var(--color-card-bg); border: 1px solid var(--color-border); padding: 45px; border-radius: 16px; display: flex; flex-direction: column; gap: 24px;">
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-muted); letter-spacing: 0.05em; font-weight: 500;">Full Name</label>
+              <input type="text" required placeholder="John Doe" style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; padding: 12px 16px; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s ease;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-muted); letter-spacing: 0.05em; font-weight: 500;">Email Address</label>
+              <input type="email" required placeholder="john@company.com" style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; padding: 12px 16px; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s ease;">
+            </div>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-muted); letter-spacing: 0.05em; font-weight: 500;">Service Required</label>
+            <select required style="background-color: #13100C; border: 1px solid var(--color-border); border-radius: 4px; padding: 12px 16px; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s ease;">
+              <option value="" disabled selected>Select a service...</option>
+              <option value="web">Web Application Development</option>
+              <option value="mobile">Mobile App Development</option>
+              <option value="custom">Custom Enterprise Software</option>
+              <option value="design">UI/UX Design Strategy</option>
+              <option value="integration">API Engineering & Integration</option>
+              <option value="cloud">Cloud Architecture & DevOps</option>
+            </select>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-muted); letter-spacing: 0.05em; font-weight: 500;">Project Message</label>
+            <textarea required rows="4" placeholder="Briefly describe your objectives, timeline, and tech constraints..." style="background-color: rgba(255,255,255,0.03); border: 1px solid var(--color-border); border-radius: 4px; padding: 12px 16px; color: white; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.3s ease; resize: vertical; min-height: 100px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+            <span>Send Message</span>
+            <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer Section ───────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a href="#hero" class="logo">
+            <div class="logo-badge">TS</div>
+            <span>True<strong>Solution</strong></span>
+          </a>
+          <p>
+            Building world-class, luxury-tier software applications that drive sustainable business scale and competitive advantage.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#why-choose">Why Us</a></li>
+            <li><a href="#contact">Get Consultation</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Global Office</h4>
+          <ul style="color: var(--color-muted); font-size: 0.9rem; line-height: 1.8;">
+            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="mail" style="width: 14px; height: 14px; color: var(--color-primary);"></i> hello@truesolution.dev</li>
+            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="phone" style="width: 14px; height: 14px; color: var(--color-primary);"></i> +92 300 1234567</li>
+            <li style="display: flex; align-items: center; gap: 8px;"><i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Lahore, Pakistan</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 TrueSolution. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#hero">Privacy Policy</a>
+          <a href="#hero">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── Script Execution ──────────────────────────────────── -->
+  <script>
+    // Initialize Lucide icons replacement
+    lucide.createIcons();
+
+    // Mobile Navbar Drawer toggles
+    const hamburgerOpen = document.getElementById('hamburger-open');
+    const hamburgerClose = document.getElementById('hamburger-close');
+    const mobileDrawer = document.getElementById('mobile-menu-drawer');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    hamburgerOpen.addEventListener('click', () => {
+      mobileDrawer.classList.add('active');
+    });
+
+    hamburgerClose.addEventListener('click', () => {
+      mobileDrawer.classList.remove('active');
+    });
+
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileDrawer.classList.remove('active');
+      });
+    });
+
+    // IntersectionObserver scroll animations
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target); // Trigger only once
+        }
+      });
+    }, {
+      root: null,
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealElements.forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // Header scroll background modification
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        header.style.backgroundColor = 'rgba(13, 10, 7, 0.96)';
+        header.style.height = '75px';
+      } else {
+        header.style.backgroundColor = 'rgba(13, 10, 7, 0.75)';
+        header.style.height = '85px';
+      }
+    });
+  </script>
+</body>
+</html>

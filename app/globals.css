@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;700&display=swap');
+
+/* ─── CSS Variables ───────────────────────────────────── */
+:root {
+  --ts-bg: #0D0A07;
+  --ts-bg2: #13100C;
+  --ts-primary: #C9A96E;
+  --ts-secondary: #E8D5B0;
+  --ts-accent: #1A1510;
+  --ts-text: #F5ECD7;
+  --ts-muted: #8A7A68;
+  --ts-border: rgba(201, 169, 110, 0.15);
+  --ts-glass: rgba(201, 169, 110, 0.03);
+  --ts-glass-border: rgba(201, 169, 110, 0.12);
+}
+
+/* ─── Base ────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--ts-bg);
+    color: var(--ts-text);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+/* ─── Glassmorphism ───────────────────────────────────── */
+@layer components {
+  .glass {
+    background: var(--ts-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--ts-glass-border);
+  }
+
+  .glass-card {
+    background: rgba(19, 16, 12, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(201, 169, 110, 0.12);
+    border-radius: 16px;
+  }
+
+  /* ─── Gradient text ─── */
+  .gradient-text {
+    background: linear-gradient(135deg, #C9A96E 0%, #E8D5B0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-blue {
+    background: linear-gradient(135deg, #C9A96E 0%, #E8D5B0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── Buttons ─── */
+  .btn-primary {
+    background: linear-gradient(135deg, #C9A96E, #E8D5B0);
+    color: #0D0A07;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(201, 169, 110, 0.3);
+    background: linear-gradient(135deg, #E8D5B0, #C9A96E);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.625rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(201, 169, 110, 0.6);
+    background: rgba(201, 169, 110, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* ─── Section ─── */
+  .section-padding {
+    padding: 6rem 0;
+  }
+
+  .container-custom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ─── Orb ─── */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  /* ─── Card glow ─── */
+  .card-glow {
+    transition: all 0.4s ease;
+  }
+
+  .card-glow:hover {
+    box-shadow: 0 0 40px rgba(201, 169, 110, 0.08), 0 20px 60px rgba(0,0,0,0.5);
+    border-color: rgba(201, 169, 110, 0.25) !important;
+    transform: translateY(-4px);
+  }
+
+  /* ─── Tech badge ─── */
+  .tech-badge {
+    background: rgba(201, 169, 110, 0.08);
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    color: #E8D5B0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+
+  /* ─── Grid bg ─── */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(201, 169, 110, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 169, 110, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* ─── Navbar scrolled ─── */
+  .navbar-scrolled {
+    background: rgba(13, 10, 7, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201, 169, 110, 0.08);
+  }
+}
+
+/* ─── Animations ──────────────────────────────────────── */
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes pulse-glow-anim {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float-up 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow-anim 3s ease-in-out infinite;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ts-bg); }
+::-webkit-scrollbar-thumb { background: rgba(201, 169, 110, 0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 169, 110, 0.7); }
+
+/* ─── Selection ───────────────────────────────────────── */
+::selection {
+  background: rgba(201, 169, 110, 0.25);
+  color: white;
+}
