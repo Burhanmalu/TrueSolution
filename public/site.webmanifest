@@ -1,0 +1,16 @@
+{
+  "name": "TrueSolution",
+  "short_name": "TrueSolution",
+  "description": "Professional software development company building scalable digital products.",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#09090B",
+  "background_color": "#09090B",
+  "display": "standalone",
+  "start_url": "/"
+}

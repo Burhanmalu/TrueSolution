@@ -1,214 +1,323 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Menu, X, ArrowRight, ExternalLink, Github, Linkedin,
   Mail, Phone, MapPin, CheckCircle, Globe, Smartphone,
-  Code2, Palette, Zap, Cloud, Headphones, ChevronLeft,
-  ChevronRight, Star, Send, Building2, Layers,
-  Shield, TrendingUp, Users, Award, Clock, HelpCircle,
-  Play, Check, CheckSquare
+  Code2, Zap, Cloud, ChevronRight, Star, Send,
+  Building2, Layers, Shield, TrendingUp, Users, Award,
+  Clock, HelpCircle, Check, Target, Database, Server,
+  Lock, Cpu, GitBranch, BarChart3, Rocket, Eye,
+  Sparkles, ArrowUpRight, Play, Terminal, Box,
+  Workflow, Monitor, ChevronDown, Quote, FileCode,
+  Gauge, Timer, UserCheck, Trophy
 } from 'lucide-react';
 
-// ─────────────────────────────────────────────────────────
-//  Types & Data Structures
-// ─────────────────────────────────────────────────────────
-interface Service {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  color: string;
-}
+// ═══════════════════════════════════════════════════════════
+//  Types
+// ═══════════════════════════════════════════════════════════
 
-interface Project {
+interface CaseStudy {
   id: number;
   title: string;
+  client: string;
   category: string;
-  image: string;
-  problem: string;
+  video?: string;
+  challenge: string;
   solution: string;
+  architecture: string[];
   tech: string[];
   impact: string;
+  metrics: { value: string; label: string }[];
   demoUrl: string;
 }
 
-interface TeamMember {
-  id: number;
-  name: string;
-  role: string;
-  image: string;
-  skills: string[];
-  desc: string;
-  linkedin: string;
-}
+// ═══════════════════════════════════════════════════════════
+//  Data
+// ═══════════════════════════════════════════════════════════
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-// ─────────────────────────────────────────────────────────
-//  Mock & Structural Data
-// ─────────────────────────────────────────────────────────
-const SERVICES: Service[] = [
+const SERVICES = [
   {
-    icon: <Globe size={26} />,
-    title: 'Web Development',
-    description: 'Enterprise-grade, blazing-fast web applications built on modern frameworks like React, Next.js, and TypeScript, optimized for conversion and scale.',
-    color: '#C9A96E'
+    icon: <Globe size={22} />,
+    title: 'Launch Revenue-Generating Web Platforms',
+    desc: 'Full-stack web applications optimized for conversion, speed, and scale.',
+    deliverables: ['Next.js / React SPAs', 'Server-side rendering & SEO', 'Payment & auth integration', 'Admin dashboards'],
+    tech: ['Next.js', 'TypeScript', 'PostgreSQL'],
   },
   {
-    icon: <Smartphone size={26} />,
-    title: 'Mobile Apps',
-    description: 'Bespoke native and cross-platform mobile apps for iOS and Android, engineered with high-performance engines and delightful micro-interactions.',
-    color: '#E8D5B0'
+    icon: <Smartphone size={22} />,
+    title: 'Ship App Store-Ready Mobile Products',
+    desc: 'Cross-platform mobile apps with native performance and delightful UX.',
+    deliverables: ['iOS & Android deployment', 'Push notifications & offline', 'Real-time sync', 'App Store optimization'],
+    tech: ['React Native', 'Flutter', 'Firebase'],
   },
   {
-    icon: <Layers size={26} />,
-    title: 'SaaS Development',
-    description: 'Multi-tenant cloud architecture, automated subscription systems, and highly scalable databases designed for fast-growing software products.',
-    color: '#C9A96E'
+    icon: <Layers size={22} />,
+    title: 'Build Multi-Tenant SaaS at Scale',
+    desc: 'Subscription-based platforms with automated billing and tenant isolation.',
+    deliverables: ['Multi-tenant architecture', 'Stripe billing integration', 'Role-based access control', 'Usage analytics'],
+    tech: ['Node.js', 'PostgreSQL', 'Redis'],
   },
   {
-    icon: <Zap size={26} />,
-    title: 'AI Solutions',
-    description: 'Custom machine learning models, intelligent recommendation engines, automation agents, and natural language processing pipelines.',
-    color: '#E8D5B0'
+    icon: <Sparkles size={22} />,
+    title: 'Automate Operations with AI & ML',
+    desc: 'Custom AI models and intelligent automation for business processes.',
+    deliverables: ['Custom ML model training', 'NLP & document processing', 'Recommendation engines', 'Workflow automation'],
+    tech: ['Python', 'TensorFlow', 'OpenAI'],
   },
   {
-    icon: <Palette size={26} />,
-    title: 'UI/UX Design',
-    description: 'Luxury-tier, editorial user experiences built on rigorous user research, wireframing, and custom design systems matching your exact brand DNA.',
-    color: '#C9A96E'
+    icon: <Eye size={22} />,
+    title: 'Convert Users with Research-Backed Design',
+    desc: 'Data-driven UI/UX that reduces friction and increases conversion rates.',
+    deliverables: ['User research & testing', 'Design system creation', 'Interaction prototyping', 'Accessibility compliance'],
+    tech: ['Figma', 'Framer', 'Analytics'],
   },
   {
-    icon: <Cloud size={26} />,
-    title: 'Cloud Solutions',
-    description: 'High-availability infrastructure configurations, Amazon Web Services hosting, custom DevOps pipelines, and Docker/Kubernetes container orchestration.',
-    color: '#E8D5B0'
-  }
+    icon: <Cloud size={22} />,
+    title: 'Deploy on Auto-Scaling Infrastructure',
+    desc: 'Cloud-native deployments with zero-downtime and automated scaling.',
+    deliverables: ['AWS / GCP setup', 'CI/CD pipelines', 'Docker & Kubernetes', 'Monitoring & alerting'],
+    tech: ['AWS', 'Docker', 'Terraform'],
+  },
 ];
 
-const WHY_CHOOSE = [
-  { title: 'Custom Software Expertise', desc: 'Bespoke systems built from scratch to match your unique operations, avoiding cookie-cutter structures.' },
-  { title: 'Agile Development', desc: 'Continuous deployment, regular iteration schedules, and clear sprint reviews that keep you fully in control.' },
-  { title: 'Dedicated Team', desc: 'Senior engineers, certified product architects, and world-class designers assigned exclusively to your product.' },
-  { title: 'Fast Delivery', desc: 'Optimized developer velocity and automated pipelines that ship production-grade code to market ahead of deadlines.' },
-  { title: 'Long-Term Support', desc: 'Round-the-clock systems monitoring, proactive code audits, performance tuning, and scaling support.' },
-  { title: 'Scalable Solutions', desc: 'Infrastructure systems designed modularly, prepared to seamlessly absorb millions of active transactions.' }
-];
-
-const PROJECTS: Project[] = [
+const CASE_STUDIES: CaseStudy[] = [
   {
     id: 1,
-    title: 'NexaFlow SaaS Analytics Platform',
-    category: 'SaaS & Enterprise',
-    image: '/project-1.png',
-    problem: 'The client faced heavy performance bottlenecks and high database latency when processing real-time subscription analytics for over 100,000 active users.',
-    solution: 'We engineered a Next.js frontend paired with an optimized Go backend, using Redis cache clustering and partition postgres configurations.',
-    tech: ['Next.js', 'Go', 'PostgreSQL', 'Redis', 'Tailwind CSS'],
-    impact: 'Reduced database queries response latency by 72% and saved the client over $18,000 in monthly database hosting bills.',
-    demoUrl: '#'
+    title: 'PrimeEstate Property Management Platform',
+    client: 'Bhuvantu',
+    category: 'Real Estate & PropTech',
+    video: '/Bhuvantu_video.mp4',
+    challenge: 'A real estate brokerage firm struggled with managing property listings, handling buyer inquiries, and coordinating property visits manually — resulting in delayed responses, missed leads, and lost revenue opportunities.',
+    solution: 'We engineered a full-stack property management platform with an admin dashboard for listing management, advanced search with multi-parameter filtering, detailed property pages with virtual tour integration, and a smart appointment scheduling system for automated property tour booking.',
+    architecture: ['Next.js Frontend', 'Node.js API', 'PostgreSQL', 'Admin Dashboard', 'Booking Engine', 'Email Service'],
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
+    impact: 'Transformed the client\'s manual workflow into a fully digital property management ecosystem, enabling self-service property discovery and automated appointment scheduling.',
+    metrics: [
+      { value: '3x', label: 'Lead Increase' },
+      { value: '60%', label: 'Faster Response' },
+      { value: '85%', label: 'Booking Rate' },
+    ],
+    demoUrl: 'https://www.bhuvantu.com/',
   },
   {
     id: 2,
-    title: 'Equinox Personal Banking App',
-    category: 'Fintech Mobile',
-    image: '/project-2.png',
-    problem: 'A personal banking startup required a premium cross-platform app featuring bio-metric authentication, high security, and instant global ledger updates.',
-    solution: 'We built a React Native app utilizing secure hardware encryption hooks, integrated with AWS serverless backend transaction systems.',
-    tech: ['React Native', 'TypeScript', 'AWS Lambda', 'DynamoDB', 'Framer Motion'],
-    impact: 'Successfully passed rigorous security audits and achieved over 50,000 active app downloads within the first three months of launch.',
-    demoUrl: '#'
+    title: 'Lokhandwala Group Corporate Platform',
+    client: 'Lokhandwala Group',
+    category: 'Enterprise Real Estate',
+    video: '/ALOKHANDWALA_video.mp4',
+    challenge: 'The client needed a premium digital platform to showcase decades of real estate excellence, highlight residential and commercial developments, strengthen brand credibility, and provide buyers with a seamless way to explore projects and submit inquiries.',
+    solution: 'We developed a modern enterprise website featuring immersive project showcases, company heritage timeline, township portfolios, luxury property presentations, lead generation forms, and a scalable CMS for managing current and future developments.',
+    architecture: ['Next.js SSR', 'Headless CMS', 'PostgreSQL', 'Lead Capture API', 'CDN', 'Analytics'],
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
+    impact: 'Established a commanding digital presence that matched the client\'s offline brand stature, driving significant improvements in online lead generation and project visibility.',
+    metrics: [
+      { value: '150%', label: 'More Inquiries' },
+      { value: '40%', label: 'Bounce Reduction' },
+      { value: '2.5x', label: 'Page Engagement' },
+    ],
+    demoUrl: 'https://alokhandwala.com/',
   },
   {
     id: 3,
-    title: 'ApexCare AI Health Agent',
-    category: 'Healthcare AI',
-    image: '/project-3.png',
-    problem: 'Healthcare providers suffered from high support overhead, wasting hours daily answering repetitive patient pre-screening questions manually.',
-    solution: 'We trained and integrated a secure OpenAI pre-screening agent with HIPAA-compliant data routing, embedded into a beautiful web portal.',
-    tech: ['Next.js', 'Python', 'OpenAI API', 'FastAPI', 'PostgreSQL'],
-    impact: 'Automated 84% of initial patient pre-screen queries, saving clinics an average of 45 hours per week of nurse administrative labor.',
-    demoUrl: '#'
-  }
+    title: 'Grind — Browser-Based Coding Platform',
+    client: 'Grind',
+    category: 'EdTech & Developer Tools',
+    video: '/Grind_video.mp4',
+    challenge: 'Aspiring developers needed a fast, accessible platform to practice coding and prepare for technical interviews without the complexity of local environment setup. Traditional development tools require significant installation, configuration, and system resources.',
+    solution: 'We built a browser-based coding platform with an online compiler supporting multiple languages, a coding challenge system with difficulty progression, AI-powered learning assistance, real-time code execution with sandboxed containers, progress tracking dashboards, and interview preparation resources.',
+    architecture: ['Next.js Frontend', 'Code Execution Engine', 'Docker Sandboxes', 'PostgreSQL', 'AI Assistant API', 'WebSocket'],
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Docker'],
+    impact: 'Created an accessible coding education platform that eliminates setup barriers and enables developers to start practicing instantly from any device.',
+    metrics: [
+      { value: '10K+', label: 'Active Users' },
+      { value: '50K+', label: 'Code Executions' },
+      { value: '95%', label: 'Uptime SLA' },
+    ],
+    demoUrl: 'https://www.grind.org.in',
+  },
+  {
+    id: 4,
+    title: 'Civic Samadhan — Smart Grievance Platform',
+    client: 'Civic Samadhan',
+    category: 'Civic Technology & E-Governance',
+    video: '/civicsamadhan_video.mp4',
+    challenge: 'Citizens struggled to report civic issues efficiently due to fragmented complaint systems, lack of transparency, and zero visibility into the resolution process. Municipal authorities faced challenges organizing, tracking, and responding to public grievances at scale.',
+    solution: 'We developed a centralized civic grievance management platform enabling citizens to report issues with evidence upload, track complaint status in real time, and receive notifications throughout the resolution lifecycle. Role-based administration, intelligent categorization, and location-based tracking empower authorities to manage complaints at scale.',
+    architecture: ['Next.js Frontend', 'Node.js API', 'PostgreSQL', 'Role-Based Auth', 'Geo Tracking', 'Notification Service'],
+    tech: ['Next.js', 'TypeScript', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
+    impact: 'Digitized the entire civic grievance lifecycle from reporting to resolution, establishing transparency and accountability between citizens and government bodies.',
+    metrics: [
+      { value: '70%', label: 'Faster Resolution' },
+      { value: '5K+', label: 'Issues Tracked' },
+      { value: '4.8★', label: 'Citizen Rating' },
+    ],
+    demoUrl: 'https://civicsamadhan.vercel.app',
+  },
 ];
 
-const TEAM: TeamMember[] = [
+const PROCESS_STEPS = [
   {
-    id: 1,
-    name: 'Amir Hassan',
-    role: 'Founder & Chief Technology Officer',
-    image: '/team-1.png',
-    skills: ['System Architecture', 'Next.js', 'Go', 'AI Engineering'],
-    desc: 'Ex-Senior Systems Architect with a passion for engineering ultra-fast, world-class enterprise applications.',
-    linkedin: '#'
+    phase: 'Discovery & Scoping',
+    duration: 'Week 1–2',
+    icon: <Target size={18} />,
+    details: [
+      'Stakeholder interviews & requirements gathering',
+      'User research and competitive analysis',
+      'Technical architecture planning',
+      'Detailed SOW & milestone delivery',
+    ],
   },
   {
-    id: 2,
-    name: 'Sarah Ahmed',
-    role: 'Lead UI Architect & Frontend Specialist',
-    image: '/team-2.png',
-    skills: ['Figma', 'TypeScript', 'Framer Motion', 'Tailwind CSS'],
-    desc: 'Award-winning interactive designer dedicated to translating complex business requirements into sleek web visual experiences.',
-    linkedin: '#'
+    phase: 'System Design',
+    duration: 'Week 2–3',
+    icon: <FileCode size={18} />,
+    details: [
+      'Database schema & API contract design',
+      'UI/UX wireframing and prototyping',
+      'Security model & auth flow planning',
+      'Infrastructure topology planning',
+    ],
   },
   {
-    id: 3,
-    name: 'Usman Malik',
-    role: 'Lead Cloud & DevOps Engineer',
-    image: '/team-3.png',
-    skills: ['AWS', 'Docker', 'CI/CD Pipelines', 'Kubernetes'],
-    desc: 'DevOps professional focused on setting up highly secure, auto-scaling, HIPAA-compliant hosting infrastructures.',
-    linkedin: '#'
-  }
+    phase: 'Sprint Development',
+    duration: 'Week 3–10',
+    icon: <Terminal size={18} />,
+    details: [
+      '2-week agile sprints with daily standups',
+      'CI/CD pipeline with automated testing',
+      'Staging environment with weekly demos',
+      'Continuous integration & code reviews',
+    ],
+  },
+  {
+    phase: 'QA & Security Audit',
+    duration: 'Week 10–11',
+    icon: <Shield size={18} />,
+    details: [
+      'Automated unit & integration testing',
+      'Security scanning & penetration testing',
+      'Load testing & performance optimization',
+      'Accessibility & cross-browser QA',
+    ],
+  },
+  {
+    phase: 'Deployment & Launch',
+    duration: 'Week 11–12',
+    icon: <Rocket size={18} />,
+    details: [
+      'Production deployment with zero downtime',
+      'DNS, SSL, and CDN configuration',
+      'Monitoring, logging & alerting setup',
+      'Technical documentation handoff',
+    ],
+  },
+  {
+    phase: 'Ongoing Support',
+    duration: 'Post-Launch',
+    icon: <Gauge size={18} />,
+    details: [
+      'SLA-backed support & incident response',
+      'Proactive monitoring & uptime guarantees',
+      'Feature iterations & scaling support',
+      'Quarterly architecture reviews',
+    ],
+  },
 ];
 
-const FAQS: FAQItem[] = [
+const TECH_STACK = {
+  Frontend: [
+    { name: 'React', desc: 'Component architecture' },
+    { name: 'Next.js', desc: 'Full-stack framework' },
+    { name: 'TypeScript', desc: 'Type-safe development' },
+    { name: 'Tailwind CSS', desc: 'Utility-first styling' },
+  ],
+  Backend: [
+    { name: 'Node.js', desc: 'Server-side runtime' },
+    { name: 'Python', desc: 'ML & automation' },
+    { name: 'Go', desc: 'High-performance services' },
+    { name: 'REST/GraphQL', desc: 'API design' },
+  ],
+  Database: [
+    { name: 'PostgreSQL', desc: 'Relational data' },
+    { name: 'MongoDB', desc: 'Document storage' },
+    { name: 'Redis', desc: 'Caching layer' },
+    { name: 'Firebase', desc: 'Real-time data' },
+  ],
+  'Cloud & DevOps': [
+    { name: 'AWS', desc: 'Cloud infrastructure' },
+    { name: 'Docker', desc: 'Containerization' },
+    { name: 'Kubernetes', desc: 'Orchestration' },
+    { name: 'CI/CD', desc: 'Automated pipelines' },
+  ],
+};
+
+const TESTIMONIALS = [
   {
-    question: 'How do you estimate custom software development budgets?',
-    answer: 'We conduct a detailed, complimentary scoping phase where we break down your goals, wireframes, and technical specifications. You receive a comprehensive document outlining precise sprints, line-item budgets, and milestones with zero hidden fees.'
+    name: 'Ajay Sisodiya',
+    role: 'Real Estate Consultant',
+    company: 'Bhuvantu',
+    text: 'TrueSolution developed a powerful real estate platform tailored to our business needs. The property listing system and appointment scheduling features have made it much easier for clients to discover properties and connect with us. Their professionalism and technical expertise were exceptional throughout the entire engagement.',
+    avatar: 'AS',
   },
   {
-    question: 'Do we own the full intellectual property (IP) of the software?',
-    answer: 'Absolutely. Once milestones are completed and invoiced, 100% of the proprietary source code, IP rights, deployment setups, and assets are legally transferred directly to your organization.'
+    name: 'Aliasger Lokhandwala',
+    role: 'Managing Director',
+    company: 'Lokhandwala Group',
+    text: 'From concept to deployment, TrueSolution delivered a professional website that showcases our scaffolding services and real estate portfolio perfectly. The design is modern, responsive, and has helped us generate significantly more business inquiries through our online presence. Their attention to detail was remarkable.',
+    avatar: 'AL',
   },
   {
-    question: 'How do you ensure enterprise-grade security?',
-    answer: 'We build security into the initial application architecture from day one. We use secure OAuth systems, strict data encryption at rest and in transit, OWASP security scanning, and run rigorous automated audits to ensure defense against common vulnerabilities.'
+    name: 'Asmit Panday',
+    role: 'Founder & CEO',
+    company: 'Grind Platform',
+    text: 'The online compiler platform developed by TrueSolution provides a smooth coding experience with fast execution and an intuitive interface. Their team demonstrated strong technical skills in containerization and real-time systems, and delivered a product that exceeded our expectations on both performance and user experience.',
+    avatar: 'AP',
   },
-  {
-    question: 'What is your communication schedule during developers sprints?',
-    answer: 'We schedule weekly live demo reviews where you see active software progress. Additionally, we provide staging URLs updated continuously, and assign a dedicated Product Manager available daily on Slack for quick responses.'
-  },
-  {
-    question: 'Can you scale the software architecture later as we grow?',
-    answer: 'Yes. We compile clean, modular, and fully documented codebases using serverless infrastructure models or Docker container grids. This ensures you can scale horizontally to handle millions of active users without needing code rewrites.'
-  }
 ];
 
-// ─────────────────────────────────────────────────────────
+const FAQS = [
+  {
+    question: 'How do you estimate project budgets?',
+    answer: 'We conduct a detailed, complimentary scoping phase where we break down your goals, wireframes, and technical specifications. You receive a comprehensive document outlining precise sprints, line-item budgets, and milestones with zero hidden fees. Typical projects range from $5K–$100K+ depending on complexity.',
+  },
+  {
+    question: 'Do we own the full intellectual property?',
+    answer: 'Absolutely. Once milestones are completed and invoiced, 100% of the proprietary source code, IP rights, deployment configurations, and assets are legally transferred directly to your organization. We operate on a clean work-for-hire basis.',
+  },
+  {
+    question: 'How do you handle security?',
+    answer: 'Security is built into the architecture from day one. We implement secure OAuth/JWT authentication, data encryption at rest and in transit, OWASP security scanning, automated vulnerability audits, and follow principle-of-least-privilege access controls throughout.',
+  },
+  {
+    question: 'What does communication look like during development?',
+    answer: 'We run weekly live demo reviews where you see active software progress on staging URLs. A dedicated project manager is available daily on Slack. You get access to our project board for full transparency into sprint progress, blockers, and deliverables.',
+  },
+  {
+    question: 'Can the architecture scale as we grow?',
+    answer: 'Yes. We build clean, modular, fully documented codebases using containerized infrastructure. Our architectures are designed to scale horizontally — handling growth from hundreds to millions of users without requiring code rewrites or platform migrations.',
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
 //  Animation Variants
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
 };
 
 const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } }
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' } }
-};
-
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  Counter Component
-// ─────────────────────────────────────────────────────────
-function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
+// ═══════════════════════════════════════════════════════════
+
+function Counter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
@@ -216,7 +325,7 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   useEffect(() => {
     if (!inView) return;
     let start = 0;
-    const step = target / 60;
+    const step = target / 50;
     const timer = setInterval(() => {
       start += step;
       if (start >= target) {
@@ -225,16 +334,17 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
       } else {
         setCount(Math.floor(start));
       }
-    }, 16);
+    }, 20);
     return () => clearInterval(timer);
   }, [inView, target]);
 
-  return <span ref={ref}>{count}{suffix}</span>;
+  return <span ref={ref}>{prefix}{count}{suffix}</span>;
 }
 
-// ─────────────────────────────────────────────────────────
-//  Navigation Component
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  Navigation
+// ═══════════════════════════════════════════════════════════
+
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -246,12 +356,11 @@ function Navigation() {
   }, []);
 
   const navLinks = [
-    { label: 'Services', href: '#services' },
-    { label: 'Why Us', href: '#why-choose' },
-    { label: 'Projects', href: '#projects' },
+    { label: 'Solutions', href: '#services' },
+    { label: 'Case Studies', href: '#case-studies' },
     { label: 'Process', href: '#process' },
-    { label: 'Team', href: '#team' },
-    { label: 'FAQ', href: '#faq' }
+    { label: 'About', href: '#about' },
+    { label: 'Contact', href: '#contact' },
   ];
 
   return (
@@ -259,29 +368,23 @@ function Navigation() {
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'navbar-scrolled' : 'bg-transparent border-b border-transparent'
           }`}
       >
-        <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-[85px]">
-          {/* Monogram Monolith Badge */}
-          <a href="#hero" className="flex items-center gap-3.5 group text-decoration-none">
-            <div className="w-[38px] h-[38px] rounded-lg border border-[#C9A96E] flex items-center justify-center relative overflow-hidden bg-transparent shadow-[0_0_15px_rgba(201,169,110,0.1)]">
-              <span className="text-[#C9A96E] font-serif font-bold text-lg z-10">TS</span>
-              <div className="absolute inset-0 bg-[#C9A96E]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="text-white font-medium text-xl tracking-tight font-serif">
-              True<span className="text-[#C9A96E] italic font-normal ml-0.5">Solution</span>
-            </span>
+        <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-[72px]">
+          {/* Logo */}
+          <a href="#hero" className="flex items-center group text-decoration-none transition-transform duration-300 hover:scale-[1.02]">
+            <img src="/logo.png" alt="TrueSolution Logo" className="h-20 md:h-24 lg:h-28 w-auto object-contain" />
           </a>
 
-          {/* Links Desktop */}
-          <div className="hidden md:flex items-center gap-9">
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                className="text-xs font-semibold uppercase tracking-[0.08em] text-[#8A7A68] hover:text-[#C9A96E] transition-colors duration-300"
+                className="text-[13px] font-medium text-[#71717A] hover:text-white transition-colors duration-200"
               >
                 {link.label}
               </a>
@@ -290,17 +393,18 @@ function Navigation() {
 
           {/* CTA */}
           <div className="hidden md:block">
-            <a href="#contact" className="btn-primary py-3 px-6 text-xs uppercase font-bold tracking-[0.08em] inline-flex items-center gap-2">
-              Book Consultation
+            <a href="#contact" className="btn-primary py-2.5 px-5 text-[13px] font-semibold inline-flex items-center gap-2">
+              Start a Project
+              <ArrowRight size={14} />
             </a>
           </div>
 
-          {/* Toggle drawer mobile */}
+          {/* Mobile toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-[#F5ECD7] hover:text-[#C9A96E] transition-colors focus:outline-none"
+            className="md:hidden text-[#A1A1AA] hover:text-white transition-colors focus:outline-none"
           >
-            {isOpen ? <X size={26} /> : <Menu size={26} />}
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </motion.nav>
@@ -312,15 +416,15 @@ function Navigation() {
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-40 bg-[#0D0A07]/98 backdrop-blur-xl flex flex-col justify-center items-center gap-8 md:hidden"
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="fixed inset-0 z-40 bg-[#09090B]/98 backdrop-blur-xl flex flex-col justify-center items-center gap-6 md:hidden"
           >
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="font-serif text-3xl text-white hover:text-[#C9A96E] transition-colors duration-300"
+                className="text-2xl font-semibold text-white hover:text-[#818CF8] transition-colors duration-200"
               >
                 {link.label}
               </a>
@@ -328,9 +432,9 @@ function Navigation() {
             <a
               href="#contact"
               onClick={() => setIsOpen(false)}
-              className="btn-primary mt-6 tracking-widest text-center"
+              className="btn-primary mt-4 px-8 py-3"
             >
-              Book Consultation
+              Start a Project
             </a>
           </motion.div>
         )}
@@ -339,127 +443,102 @@ function Navigation() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Hero Section & Stats
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  Hero Section
+// ═══════════════════════════════════════════════════════════
+
 function HeroSection() {
-  const floatingIcons = [
-    { icon: '🚀', x: '8%', y: '25%', delay: 0 },
-    { icon: '⚡', x: '88%', y: '18%', delay: 0.4 },
-    { icon: '💻', x: '84%', y: '65%', delay: 0.8 },
-    { icon: '☁️', x: '6%', y: '68%', delay: 1.2 },
-    { icon: '⚛️', x: '78%', y: '40%', delay: 0.6 },
-    { icon: '📱', x: '18%', y: '45%', delay: 1.0 },
-  ];
-
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-36 pb-20 grid-bg border-b border-[rgba(201,169,110,0.15)]">
-      {/* Editorial Radial Glow */}
-      <div className="absolute top-[40%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-[85vw] h-[85vw] max-w-[800px] max-h-[800px] bg-gradient-to-r from-[#C9A96E]/5 to-transparent rounded-full filter blur-[100px] pointer-events-none z-0" />
-
-      {/* Floating Badges */}
-      {floatingIcons.map((item, i) => (
-        <motion.div
-          key={i}
-          className="absolute hidden md:flex items-center justify-center p-3.5 bg-[#13100C]/70 backdrop-blur-md border border-[rgba(201,169,110,0.15)] rounded-xl pointer-events-none z-10"
-          style={{ left: item.x, top: item.y }}
-          animate={{ y: [0, -15, 0] }}
-          transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: 'easeInOut', delay: item.delay }}
-        >
-          <span className="text-xl">{item.icon}</span>
-        </motion.div>
-      ))}
+    <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden pt-28 pb-16 dot-grid-bg">
+      {/* Background glows */}
+      <div className="absolute top-[20%] left-[50%] -translate-x-[50%] w-[700px] h-[700px] bg-[#6366F1]/[0.04] rounded-full filter blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[20%] w-[400px] h-[400px] bg-[#818CF8]/[0.03] rounded-full filter blur-[100px] pointer-events-none" />
 
       <div className="max-w-[1200px] mx-auto px-6 text-center relative z-10 flex flex-col items-center">
-        {/* Editorial Subtitle Badge */}
+        {/* Trust badge */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-[#1A1510]/50 border border-[rgba(201,169,110,0.18)] rounded-full px-5 py-2 mb-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2.5 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.06)] rounded-full px-4 py-1.5 mb-8"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#C9A96E] shadow-[0_0_8px_#C9A96E]" />
-          <span className="text-xs uppercase tracking-[0.12em] font-semibold text-[#E8D5B0]">
-            Enterprise-Grade Software Engineering
+          <Lock size={12} className="text-[#22C55E]" />
+          <span className="text-[11px] font-medium text-[#A1A1AA] tracking-wide">
+            Enterprise-Grade Security · Production-Ready Systems
           </span>
         </motion.div>
 
-        {/* Large Serifs Title */}
+        {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-4xl md:text-6xl lg:text-7xl font-serif font-light text-white leading-[1.1] mb-6 max-w-[950px]"
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="text-4xl md:text-6xl lg:text-[4.25rem] font-extrabold text-white leading-[1.08] mb-6 max-w-[820px] tracking-tight"
         >
-          Building Digital Products That<br />
-          <span className="gradient-text italic font-normal">Drive Business Growth</span>
+          We Engineer the Software That{' '}
+          <span className="gradient-text">Funded Startups Scale With</span>
         </motion.h1>
 
-        {/* Subtitle */}
+        {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="text-sm md:text-base max-w-[620px] text-[#8A7A68] leading-relaxed mb-10"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-base md:text-lg max-w-[620px] text-[#A1A1AA] leading-relaxed mb-10 font-normal"
         >
-          We construct bespoke software systems, modern SaaS applications, custom APIs, and AI integrations designed exclusively to power secure digital operations at scale.
+          From MVPs that close seed rounds to platforms processing millions in transactions —
+          we deliver production-grade systems trusted by startups, SMBs, and government organizations.
         </motion.p>
 
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 mb-24"
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="flex flex-col sm:flex-row gap-3 mb-16"
         >
-          <a href="#contact" className="btn-primary py-4 px-8 text-xs font-bold tracking-[0.08em] uppercase inline-flex items-center gap-2">
-            <span>Book Free Consultation</span>
-            <ArrowRight size={14} />
+          <a href="#contact" className="btn-primary py-3.5 px-7 text-sm font-semibold inline-flex items-center gap-2.5">
+            Schedule Architecture Review
+            <ArrowRight size={16} />
           </a>
-          <a href="#projects" className="btn-secondary py-4 px-8 text-xs font-bold tracking-[0.08em] uppercase inline-flex items-center gap-2">
-            <span>View Our Work</span>
+          <a href="#case-studies" className="btn-secondary py-3.5 px-7 text-sm font-medium inline-flex items-center gap-2.5">
+            View Case Studies
           </a>
         </motion.div>
 
-        {/* Trusted By Enterprise Banner */}
-        <motion.div
+        {/* Social proof line */}
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="w-full max-w-[850px] mb-20"
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-[11px] font-medium text-[#52525B] uppercase tracking-[0.15em] mb-10"
         >
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#8A7A68] mb-6">
-            TRUSTED BY ELITE TECHNOLOGY TEAMS
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-35 hover:opacity-60 transition-opacity duration-300">
-            {['STRIPE', 'AWS', 'VERCEL', 'LINEAR', 'RETOOL'].map((brand) => (
-              <span key={brand} className="text-white font-serif tracking-[0.15em] text-xs font-semibold">
-                {brand}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+          Trusted by funded startups, government agencies, and scaling SMBs
+        </motion.p>
 
-        {/* Animated Statistics */}
+        {/* Stats bar */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full"
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-[800px]"
         >
           {[
-            { value: 10, suffix: '+', label: 'Projects Delivered' },
-            { value: 10, suffix: '+', label: 'Happy Clients' },
-            { value: 3, suffix: '+', label: 'Years of Excellence' },
-            { value: 100, suffix: '%', label: 'Satisfaction Rate' },
+            { value: 10, suffix: '+', label: 'Projects Delivered', icon: <Box size={16} /> },
+            { value: 10, suffix: 'K+', label: 'Active Users Served', icon: <Users size={16} /> },
+            { value: 1, suffix: '+', label: 'Years Experience', icon: <Clock size={16} /> },
+            { value: 100, suffix: '%', label: 'Client Satisfaction', icon: <Trophy size={16} /> },
           ].map((stat, i) => (
-            <div key={i} className="glass-card p-6 border border-[rgba(201,169,110,0.12)] text-center">
-              <div className="text-4xl md:text-5xl font-serif text-[#C9A96E] mb-1 font-light">
-                <Counter target={stat.value} suffix={stat.suffix} />
+            <div key={i} className="stat-card">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-[#6366F1]">{stat.icon}</span>
+                <span className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                  <Counter target={stat.value} suffix={stat.suffix} />
+                </span>
               </div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#8A7A68]">
+              <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-[#71717A]">
                 {stat.label}
-              </div>
+              </span>
             </div>
           ))}
         </motion.div>
@@ -468,111 +547,111 @@ function HeroSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Why Choose Section
-// ─────────────────────────────────────────────────────────
-function WhyChooseSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+// ═══════════════════════════════════════════════════════════
+//  Client Logo Marquee
+// ═══════════════════════════════════════════════════════════
+
+function ClientLogos() {
+  const clients = [
+    'Bhuvantu', 'Lokhandwala Group', 'Grind Platform', 'Civic Samadhan',
+    'AWS', 'Vercel', 'Docker', 'GitHub',
+  ];
 
   return (
-    <section id="why-choose" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#0D0A07]">
-      <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
-        >
-          {/* Left info */}
-          <div className="lg:col-span-5">
-            <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Why Us</motion.span>
-            <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-6">
-              Why Choose<br />
-              <span className="gradient-text italic font-normal">TrueSolution?</span>
-            </motion.h2>
-            <motion.p variants={fadeInUp} className="text-sm text-[#8A7A68] leading-relaxed">
-              We operate at the interface of custom visual architectures and clean system design, providing dedicated co-pilot software consulting to build stable software platforms.
-            </motion.p>
+    <section className="py-8 border-b border-[rgba(255,255,255,0.06)] bg-[#09090B] overflow-hidden">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <div className="flex items-center gap-8">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#52525B] whitespace-nowrap hidden md:block">
+            Trusted By
+          </span>
+          <div className="flex-1 overflow-hidden relative">
+            {/* Fade edges */}
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#09090B] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#09090B] to-transparent z-10 pointer-events-none" />
+            <div className="marquee-track">
+              {[...clients, ...clients].map((client, i) => (
+                <span
+                  key={i}
+                  className="text-[13px] font-semibold text-[#3F3F46] tracking-wide mx-8 whitespace-nowrap hover:text-[#71717A] transition-colors"
+                >
+                  {client}
+                </span>
+              ))}
+            </div>
           </div>
-
-          {/* Right Cards List */}
-          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-5">
-            {WHY_CHOOSE.map((item, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                className="glass-card p-5 border border-[rgba(201,169,110,0.12)] hover:border-[#C9A96E]/30 card-glow transition-all duration-300"
-              >
-                <div className="flex items-center gap-3.5 mb-2.5">
-                  <div className="w-[18px] h-[18px] rounded bg-[#C9A96E]/10 border border-[#C9A96E]/20 flex items-center justify-center text-[#C9A96E]">
-                    <Check size={10} />
-                  </div>
-                  <h4 className="font-semibold text-white text-sm">{item.title}</h4>
-                </div>
-                <p className="text-xs text-[#8A7A68] leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Services Section
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  Services Section — Outcome-Driven
+// ═══════════════════════════════════════════════════════════
+
 function ServicesSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="services" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#13100C]">
+    <section id="services" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#09090B]">
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
-        {/* Section Header */}
+        {/* Header */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="mb-12"
         >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Services Catalog</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Everything You Need to <span className="gradient-text italic font-normal">Scale Digitally</span>
+          <motion.span variants={fadeInUp} className="section-label">What We Build</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Outcome-driven engineering for{' '}
+            <span className="gradient-text">every stage of growth</span>
           </motion.h2>
-          <motion.p variants={fadeInUp} className="text-sm max-w-[600px] mx-auto text-[#8A7A68]">
-            From database strategy to pixel-perfect design, we offer premium development solutions engineered to produce commercial velocity.
+          <motion.p variants={fadeInUp} className="text-[15px] max-w-[560px] text-[#71717A]">
+            We don't just write code — we deliver business outcomes. Every engagement starts with your goals and works backwards to the architecture.
           </motion.p>
         </motion.div>
 
-        {/* Grid cards */}
+        {/* Grid */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {SERVICES.map((service, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              className="p-8 card-glow group cursor-pointer rounded-2xl flex flex-col justify-between border border-[rgba(201,169,110,0.12)]"
-              style={{ background: '#131820', transition: 'all 0.4s ease' }}
+              className="glass-card glass-card-glow p-6 group cursor-default"
             >
-              <div>
-                {/* Custom rounded box icon */}
-                <div className="w-[50px] h-[50px] rounded-xl flex items-center justify-center mb-6 bg-[#C9A96E]/5 text-[#C9A96E] border border-[#C9A96E]/15 group-hover:bg-[#C9A96E] group-hover:text-[#0D0A07] group-hover:border-[#C9A96E] transition-all duration-300">
-                  {service.icon}
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-3 tracking-wide">{service.title}</h3>
-                <p className="text-xs text-[#8A7A68] leading-relaxed mb-6">{service.description}</p>
+              {/* Icon */}
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-5 bg-[rgba(99,102,241,0.08)] text-[#6366F1] border border-[rgba(99,102,241,0.15)] group-hover:bg-[#6366F1] group-hover:text-white group-hover:border-[#6366F1] transition-all duration-300">
+                {service.icon}
               </div>
 
-              <a href="#contact" className="inline-flex items-center gap-2 text-xs font-semibold text-[#C9A96E] group-hover:gap-3 transition-all duration-300">
-                <span>Learn More</span>
-                <ArrowRight size={12} />
-              </a>
+              <h3 className="text-[15px] font-semibold text-white mb-2 tracking-tight leading-snug">
+                {service.title}
+              </h3>
+              <p className="text-[13px] text-[#71717A] leading-relaxed mb-4">{service.desc}</p>
+
+              {/* Deliverables */}
+              <ul className="space-y-1.5 mb-5">
+                {service.deliverables.map((d, j) => (
+                  <li key={j} className="flex items-start gap-2 text-[12px] text-[#A1A1AA]">
+                    <Check size={12} className="text-[#22C55E] mt-0.5 flex-shrink-0" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Tech badges */}
+              <div className="flex flex-wrap gap-1.5 mt-auto">
+                {service.tech.map((t) => (
+                  <span key={t} className="tech-badge text-[10px]">{t}</span>
+                ))}
+              </div>
             </motion.div>
           ))}
         </motion.div>
@@ -581,91 +660,132 @@ function ServicesSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Featured Projects Section
-// ─────────────────────────────────────────────────────────
-function ProjectsSection() {
+// ═══════════════════════════════════════════════════════════
+//  Case Studies Section
+// ═══════════════════════════════════════════════════════════
+
+function CaseStudiesSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="projects" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#0D0A07]">
+    <section id="case-studies" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#0F0F12]">
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
         {/* Header */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="mb-12"
         >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Featured Case Studies</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Our <span className="gradient-text italic font-normal">Recent Work</span>
+          <motion.span variants={fadeInUp} className="section-label">Case Studies</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Real problems solved,{' '}
+            <span className="gradient-text">measurable results delivered</span>
           </motion.h2>
-          <motion.p variants={fadeInUp} className="text-sm max-w-[550px] mx-auto text-[#8A7A68]">
-            Discover real solutions designed for leading business operators, resolving complex scaling obstacles.
+          <motion.p variants={fadeInUp} className="text-[15px] max-w-[560px] text-[#71717A]">
+            Each engagement is a partnership. Here's how we've helped organizations transform their operations through technology.
           </motion.p>
         </motion.div>
 
-        {/* Large Case Study Grid */}
-        <div className="space-y-12">
-          {PROJECTS.map((project, index) => (
+        {/* Case Study Cards */}
+        <div className="space-y-6">
+          {CASE_STUDIES.map((cs) => (
             <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
+              key={cs.id}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6 }}
-              className="glass-card p-6 md:p-10 border border-[rgba(201,169,110,0.12)] hover:border-[#C9A96E]/20 transition-colors duration-300"
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5 }}
+              className="glass-card border border-[rgba(255,255,255,0.06)] hover:border-[rgba(99,102,241,0.15)] transition-colors duration-300 overflow-hidden"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                {/* Screenshot Placeholder */}
-                <div className="lg:col-span-5 relative h-[250px] md:h-[320px] rounded-xl overflow-hidden bg-gradient-to-br from-[#1A1510] to-[#13100C] border border-[rgba(201,169,110,0.15)] flex flex-col justify-center items-center text-center p-6">
-                  <div className="w-[60px] h-[60px] rounded-full bg-[#C9A96E]/10 flex items-center justify-center mb-4 border border-[#C9A96E]/20">
-                    <Play size={20} className="text-[#C9A96E]" />
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+                {/* Video / Visual */}
+                <div className="lg:col-span-5 relative h-[240px] md:h-[320px] lg:h-full bg-[#0F0F12] overflow-hidden">
+                  {cs.video ? (
+                    <video
+                      src={cs.video}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <Play size={40} className="text-[#6366F1] opacity-50" />
+                    </div>
+                  )}
+                  {/* Category badge overlay */}
+                  <div className="absolute top-4 left-4">
+                    <span className="tech-badge text-[10px] bg-[#09090B]/80 backdrop-blur-sm">{cs.category}</span>
                   </div>
-                  <h4 className="text-white text-base font-semibold mb-1 font-serif">{project.title}</h4>
-                  <p className="text-[10px] text-[#8A7A68] tracking-widest uppercase">{project.category}</p>
                 </div>
 
-                {/* Case Study Details */}
-                <div className="lg:col-span-7 flex flex-col justify-between h-full">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#C9A96E] mb-2 inline-block">
-                      {project.category}
-                    </span>
-                    <h3 className="text-2xl md:text-3xl font-serif text-white mb-5">{project.title}</h3>
+                {/* Details */}
+                <div className="lg:col-span-7 p-6 md:p-8 flex flex-col">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[11px] font-semibold text-[#6366F1] uppercase tracking-wider">{cs.client}</span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-5 tracking-tight leading-tight">
+                    {cs.title}
+                  </h3>
 
-                    {/* Problem/Solution Columns */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <h5 className="text-xs uppercase font-bold tracking-[0.1em] text-red-300/80 mb-2">The Problem</h5>
-                        <p className="text-xs text-[#8A7A68] leading-relaxed">{project.problem}</p>
-                      </div>
-                      <div>
-                        <h5 className="text-xs uppercase font-bold tracking-[0.1em] text-[#C9A96E] mb-2">The Solution</h5>
-                        <p className="text-xs text-[#8A7A68] leading-relaxed">{project.solution}</p>
-                      </div>
+                  {/* Challenge / Solution */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div>
+                      <h5 className="text-[11px] uppercase font-semibold tracking-wider text-[#EF4444]/80 mb-1.5 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]/60" /> Challenge
+                      </h5>
+                      <p className="text-[12px] text-[#71717A] leading-relaxed">{cs.challenge}</p>
                     </div>
-
-                    {/* Impact Row */}
-                    <div className="bg-[#13100C] p-4 rounded-lg border border-[rgba(201,169,110,0.1)] mb-6">
-                      <h5 className="text-xs uppercase font-bold tracking-[0.1em] text-white mb-1.5">Business Impact</h5>
-                      <p className="text-xs text-[#E8D5B0] leading-relaxed">{project.impact}</p>
+                    <div>
+                      <h5 className="text-[11px] uppercase font-semibold tracking-wider text-[#22C55E]/80 mb-1.5 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]/60" /> Solution
+                      </h5>
+                      <p className="text-[12px] text-[#71717A] leading-relaxed">{cs.solution}</p>
                     </div>
                   </div>
 
-                  {/* Tech stack and Action */}
-                  <div className="flex flex-wrap gap-4 items-center justify-between pt-4 border-t border-[rgba(201,169,110,0.08)]">
+                  {/* Architecture */}
+                  <div className="mb-5">
+                    <h5 className="text-[11px] uppercase font-semibold tracking-wider text-[#A1A1AA] mb-2">Architecture</h5>
                     <div className="flex flex-wrap gap-1.5">
-                      {project.tech.map((t) => (
+                      {cs.architecture.map((a) => (
+                        <span key={a} className="arch-node text-[10px] py-1 px-2.5">{a}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Impact + Metrics */}
+                  <div className="bg-[rgba(99,102,241,0.04)] border border-[rgba(99,102,241,0.1)] rounded-lg p-4 mb-5">
+                    <h5 className="text-[11px] uppercase font-semibold tracking-wider text-white mb-2">Business Impact</h5>
+                    <p className="text-[12px] text-[#A1A1AA] leading-relaxed mb-3">{cs.impact}</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {cs.metrics.map((m, i) => (
+                        <div key={i} className="text-center">
+                          <div className="text-lg font-bold gradient-text-green">{m.value}</div>
+                          <div className="text-[9px] font-medium uppercase tracking-wider text-[#71717A]">{m.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex flex-wrap gap-3 items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.06)] mt-auto">
+                    <div className="flex flex-wrap gap-1">
+                      {cs.tech.map((t) => (
                         <span key={t} className="tech-badge text-[10px]">{t}</span>
                       ))}
                     </div>
-
-                    <a href={project.demoUrl} className="btn-secondary py-2.5 px-5 text-[10px] font-bold uppercase tracking-[0.08em] inline-flex items-center gap-1.5">
-                      <span>Live Case Study</span>
-                      <ExternalLink size={10} />
+                    <a
+                      href={cs.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#6366F1] hover:text-[#818CF8] transition-colors"
+                    >
+                      View Live Project
+                      <ExternalLink size={11} />
                     </a>
                   </div>
                 </div>
@@ -678,267 +798,281 @@ function ProjectsSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Development Process Section
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+//  Process Timeline
+// ═══════════════════════════════════════════════════════════
+
 function ProcessSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-
-  const steps = [
-    { title: 'Discover', desc: 'Complimentary wireframe reviews, security planning, and architectural budgeting specs.' },
-    { title: 'Design', desc: 'Luxury UI/UX prototyping directly mapped to match your corporate system requirements.' },
-    { title: 'Develop', desc: 'Senior engineers compile scalable frontend logic, custom databases, and API structures.' },
-    { title: 'Test', desc: 'Rigorous security scanning, automation checking, database audit runs, and load audits.' },
-    { title: 'Launch', desc: 'Deployment on high-availability, fully automated serverless setups or Docker grids.' },
-    { title: 'Support', desc: 'Dedicated engineering monitoring, continuous maintenance support, and sprint scaling.' }
-  ];
+  const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="process" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#13100C]">
+    <section id="process" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#09090B]">
+      <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left header */}
+          <div className="lg:col-span-4">
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              animate={inView ? 'visible' : 'hidden'}
+            >
+              <motion.span variants={fadeInUp} className="section-label">How We Build</motion.span>
+              <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                A proven process for{' '}
+                <span className="gradient-text">predictable delivery</span>
+              </motion.h2>
+              <motion.p variants={fadeInUp} className="text-[15px] text-[#71717A] leading-relaxed mb-6">
+                Every project follows our battle-tested 12-week delivery framework. No surprises, no scope creep — just systematic execution from discovery to launch.
+              </motion.p>
+              <motion.div variants={fadeInUp}>
+                <a href="#contact" className="btn-primary py-3 px-6 text-[13px] font-semibold inline-flex items-center gap-2">
+                  Start Discovery
+                  <ArrowRight size={14} />
+                </a>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Right timeline */}
+          <div className="lg:col-span-8">
+            <div className="relative pl-12">
+              {/* Timeline line */}
+              <div className="timeline-line" />
+
+              <div className="space-y-6">
+                {PROCESS_STEPS.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
+                    className="relative flex gap-5"
+                  >
+                    {/* Dot */}
+                    <div className="absolute -left-12 top-1">
+                      <div className={`timeline-dot ${i === 0 ? 'timeline-dot-active' : ''}`} />
+                    </div>
+
+                    {/* Card */}
+                    <div className="glass-card p-5 flex-1 hover:border-[rgba(99,102,241,0.15)] transition-colors">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-md bg-[rgba(99,102,241,0.08)] text-[#6366F1] flex items-center justify-center border border-[rgba(99,102,241,0.15)]">
+                            {step.icon}
+                          </div>
+                          <h4 className="text-[15px] font-semibold text-white">{step.phase}</h4>
+                        </div>
+                        <span className="tech-badge text-[10px]">{step.duration}</span>
+                      </div>
+                      <ul className="space-y-1.5">
+                        {step.details.map((d, j) => (
+                          <li key={j} className="flex items-start gap-2 text-[12px] text-[#71717A]">
+                            <ChevronRight size={10} className="text-[#52525B] mt-1 flex-shrink-0" />
+                            {d}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Our Team
+// ═══════════════════════════════════════════════════════════
+
+const TEAM_MEMBERS = [
+  {
+    name: 'Burhanuddin Malu',
+    role: 'Software Engineer',
+    skills: 'Full Stack Development',
+    img: '/burhan.jpeg',
+    github: 'https://github.com/Burhanmalu',
+    linkedin: 'https://www.linkedin.com/in/burhanuddin-malubhaiwala-35537b277/',
+  },
+  {
+    name: 'Aman Patidar',
+    role: 'Frontend Engineer',
+    skills: 'React • Next.js • UI Systems',
+    img: '/Aman.jpeg',
+    github: 'https://github.com/amanpatidar514',
+    linkedin: 'https://www.linkedin.com/in/aman-patidar-49449b292/',
+  },
+  {
+    name: 'Atul Shukla',
+    role: 'Backend Engineer',
+    skills: 'Node.js • APIs • Databases',
+    img: '/Atul.jpeg',
+    github: 'https://github.com/shuklatul1021',
+    linkedin: 'https://www.linkedin.com/in/mratul1021/',
+  }
+];
+
+function FounderSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+
+  return (
+    <section id="about" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#0F0F12]">
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
         {/* Header */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="mb-12 text-center max-w-3xl mx-auto"
         >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Our Timeline</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Premium <span className="gradient-text italic font-normal">Development Process</span>
+          <motion.span variants={fadeInUp} className="section-label mx-auto mb-4">Our Team</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl lg:text-[2.5rem] font-bold text-white mb-6 tracking-tight leading-[1.1]">
+            Meet the Team Behind <span className="gradient-text">TrueSolution</span>
           </motion.h2>
-          <motion.p variants={fadeInUp} className="text-sm max-w-[550px] mx-auto text-[#8A7A68]">
-            How we translate complex application requirements into production platforms seamlessly.
+          <motion.p variants={fadeInUp} className="text-[15px] md:text-lg text-[#A1A1AA] leading-relaxed">
+            A multidisciplinary team of engineers, designers, and technology specialists building scalable digital products.
           </motion.p>
         </motion.div>
 
-        {/* Process Roadmap */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 relative">
-          {steps.map((step, i) => (
+        {/* Team Grid */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+        >
+          {TEAM_MEMBERS.map((member, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="glass-card p-5 border border-[rgba(201,169,110,0.12)] flex flex-col items-center text-center relative"
+              variants={fadeInUp}
+              className="relative group p-6 rounded-[20px] bg-[rgba(255,255,255,0.03)] backdrop-blur-[12px] border border-[rgba(255,255,255,0.08)] transition-all duration-300 hover:-translate-y-2 hover:border-[rgba(124,92,255,0.5)] hover:shadow-[0_20px_50px_rgba(124,92,255,0.15)] overflow-hidden flex flex-col h-full"
             >
-              {/* Gold Badge Number */}
-              <div className="w-[30px] h-[30px] rounded-full bg-[#C9A96E]/10 border border-[#C9A96E]/20 flex items-center justify-center text-[#C9A96E] font-serif font-bold text-xs mb-4">
-                0{i + 1}
-              </div>
-              <h4 className="font-serif text-white font-medium text-lg mb-2">{step.title}</h4>
-              <p className="text-[11px] text-[#8A7A68] leading-relaxed">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+              {/* Subtle glow background */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#6366F1]/10 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-// ─────────────────────────────────────────────────────────
-//  Testimonials Section
-// ─────────────────────────────────────────────────────────
-function TestimonialsSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [current, setCurrent] = useState(0);
-
-  const testimonials = [
-    { name: 'James Carter', role: 'CEO', company: 'NexaVentures', text: 'TrueSolution completely transformed our digital systems. They engineered our serverless database dashboard ahead of schedule. Their system architecture and attention to visual detail is incomparable.', avatar: 'JC' },
-    { name: 'Emily Rodriguez', role: 'Product Lead', company: 'FinEdge Technologies', text: 'The React Native mobile banking app they constructed passed strict external penetration audits effortlessly. Users adore the premium speed and elegant animations.', avatar: 'ER' },
-    { name: 'Tariq Mahmood', role: 'Chief Information Officer', company: 'RetailPro Inc.', text: 'We pre-screen thousands of patients now automatically thanks to their compliance AI integration. The developers communication velocity was excellent.', avatar: 'TM' }
-  ];
-
-  return (
-    <section id="testimonials" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#0D0A07]">
-      <div className="max-w-[850px] mx-auto px-6" ref={ref}>
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-12"
-        >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Partner Stories</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl font-serif font-light text-white mb-4">
-            What Our <span className="gradient-text italic font-normal">Clients Say</span>
-          </motion.h2>
-        </motion.div>
-
-        {/* Carousel Card */}
-        <div className="glass-card p-8 md:p-12 border border-[rgba(201,169,110,0.15)] text-center relative overflow-hidden">
-          <div className="flex justify-center gap-1 mb-6">
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star key={s} size={16} fill="#C9A96E" color="#C9A96E" />
-            ))}
-          </div>
-
-          <p className="text-sm md:text-base text-[#F5ECD7] italic leading-relaxed mb-8">
-            &ldquo;{testimonials[current].text}&rdquo;
-          </p>
-
-          <div className="flex items-center justify-center gap-4">
-            <div className="w-[50px] h-[50px] rounded-full bg-gradient-to-br from-[#C9A96E] to-[#E8D5B0] text-[#0D0A07] font-serif font-bold text-sm flex items-center justify-center">
-              {testimonials[current].avatar}
-            </div>
-            <div className="text-left">
-              <h5 className="font-semibold text-white text-sm">{testimonials[current].name}</h5>
-              <p className="text-[11px] text-[#C9A96E]">
-                {testimonials[current].role} &middot; {testimonials[current].company}
-              </p>
-            </div>
-          </div>
-
-          {/* Dots Controls */}
-          <div className="flex gap-2 justify-center mt-10">
-            {testimonials.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className="h-1.5 rounded-full transition-all duration-300"
-                style={{
-                  width: i === current ? '24px' : '6px',
-                  backgroundColor: i === current ? '#C9A96E' : 'rgba(255,255,255,0.2)'
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────────
-//  Leadership Team Section
-// ─────────────────────────────────────────────────────────
-function TeamSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-
-  return (
-    <section id="team" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#13100C]">
-      <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
-        {/* Header */}
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
-        >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">The Architects</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Meet The <span className="gradient-text italic font-normal">Core Team</span>
-          </motion.h2>
-          <p className="text-sm max-w-[500px] mx-auto text-[#8A7A68]">
-            An elite cohort of engineers and architects driving project success with absolute code integrity.
-          </p>
-        </motion.div>
-
-        {/* Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TEAM.map((member) => (
-            <motion.div
-              key={member.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="glass-card overflow-hidden border border-[rgba(201,169,110,0.12)] hover:border-[#C9A96E]/20 card-glow group"
-            >
-              {/* Photo Box Placeholder */}
-              <div className="relative h-[220px] bg-gradient-to-br from-[#1A1510] to-[#13100C] border-b border-[rgba(201,169,110,0.12)] flex items-center justify-center">
-                <Users size={48} className="text-[#C9A96E]/15 group-hover:scale-110 transition-transform duration-300" />
-                <div className="absolute inset-0 bg-[#C9A96E]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-
-              {/* Card Details */}
-              <div className="p-6">
-                <h4 className="font-serif text-white text-xl font-medium mb-1">{member.name}</h4>
-                <p className="text-xs text-[#C9A96E] font-medium mb-4">{member.role}</p>
-                <p className="text-xs text-[#8A7A68] leading-relaxed mb-5">{member.desc}</p>
-
-                {/* Skills tags */}
-                <div className="flex flex-wrap gap-1.5 mb-6">
-                  {member.skills.map((skill) => (
-                    <span key={skill} className="tech-badge text-[9px]">{skill}</span>
-                  ))}
+              <div className="flex flex-col items-center text-center relative z-10 flex-1">
+                <div className="relative mb-5">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[rgba(255,255,255,0.1)] group-hover:border-[#6366F1] transition-colors duration-300">
+                    <img src={member.img} alt={member.name} className="w-full h-full object-cover" />
+                  </div>
                 </div>
 
-                {/* Linkedin Link */}
-                <a
-                  href={member.linkedin}
-                  className="inline-flex items-center gap-1.5 text-xs text-[#E8D5B0] hover:text-[#C9A96E] transition-colors"
-                >
-                  <Linkedin size={12} />
-                  <span>Connect on LinkedIn</span>
+                <h5 className="text-[16px] font-bold text-white group-hover:text-[#818CF8] transition-colors mb-1">{member.name}</h5>
+                <p className="text-[13px] text-[#A1A1AA] font-medium mb-4">{member.role}</p>
+
+                <div className="text-[11px] font-medium text-[#6366F1] bg-[#6366F1]/10 px-3 py-1.5 rounded-full inline-block mt-auto w-full">
+                  {member.skills}
+                </div>
+              </div>
+
+              {/* Social links (visible on hover) */}
+              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300 z-10">
+                <a href={member.linkedin} className="text-[#A1A1AA] hover:text-[#0A66C2] transition-colors p-1 bg-[#18181B] rounded-md border border-[rgba(255,255,255,0.1)] hover:border-[#0A66C2]">
+                  <Linkedin size={14} />
+                </a>
+                <a href={member.github} className="text-[#A1A1AA] hover:text-white transition-colors p-1 bg-[#18181B] rounded-md border border-[rgba(255,255,255,0.1)] hover:border-white">
+                  <Github size={14} />
                 </a>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Team Statistics Section */}
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-10 border-t border-[rgba(255,255,255,0.06)]"
+        >
+          {[
+            { value: '3', label: 'Team Members', icon: <Users size={18} /> },
+            { value: '10+', label: 'Projects Delivered', icon: <Box size={18} /> },
+            { value: '15+', label: 'Technologies', icon: <Layers size={18} /> },
+            { value: '99.9%', label: 'System Reliability', icon: <Gauge size={18} /> },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              className="flex flex-col items-center justify-center p-6 glass-card bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(99,102,241,0.05)] transition-colors duration-300 border border-[rgba(255,255,255,0.04)] hover:border-[rgba(99,102,241,0.2)] rounded-2xl group"
+            >
+              <div className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.05)] group-hover:bg-[#6366F1] group-hover:text-white text-[#A1A1AA] flex items-center justify-center mb-3 transition-all duration-300">
+                {stat.icon}
+              </div>
+              <div className="text-2xl md:text-3xl font-bold text-white mb-1 group-hover:scale-110 transition-transform duration-300">{stat.value}</div>
+              <div className="text-[11px] font-medium uppercase tracking-wider text-[#71717A] text-center">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
       </div>
     </section>
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  Technologies Section
-// ─────────────────────────────────────────────────────────
-function TechStackSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+// ═══════════════════════════════════════════════════════════
+//  Testimonials
+// ═══════════════════════════════════════════════════════════
 
-  const techStack = [
-    { name: 'React', desc: 'Component architectures' },
-    { name: 'Next.js', desc: 'Server components' },
-    { name: 'Node.js', desc: 'Secure backend operations' },
-    { name: 'PostgreSQL', desc: 'Relational data partitioning' },
-    { name: 'MongoDB', desc: 'Non-relational data structures' },
-    { name: 'AWS', desc: 'Serverless cloud services' },
-    { name: 'Docker', desc: 'System containerization' },
-    { name: 'TypeScript', desc: 'Type-safe compilations' },
-    { name: 'Python', desc: 'Machine learning operations' },
-    { name: 'AI Tools', desc: 'Intelligent process agents' }
-  ];
+function TestimonialsSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="tech-stack" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#0D0A07]">
+    <section className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#09090B]">
       <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
-        {/* Header */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="mb-10"
         >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Modern Tooling</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Engineered with <span className="gradient-text italic font-normal">Modern Technology</span>
+          <motion.span variants={fadeInUp} className="section-label">Client Testimonials</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Don't take our word for it —{' '}
+            <span className="gradient-text">hear from our clients</span>
           </motion.h2>
-          <p className="text-sm max-w-[500px] mx-auto text-[#8A7A68]">
-            We deploy production-grade software frameworks to guarantee application runtime stability and scale.
-          </p>
         </motion.div>
 
-        {/* Tech Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {techStack.map((tech, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {TESTIMONIALS.map((t, i) => (
             <motion.div
-              key={tech.name}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              key={i}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="glass-card p-5 text-center border border-[rgba(201,169,110,0.12)] hover:border-[#C9A96E]/20 transition-all card-glow cursor-default"
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className="glass-card p-6 flex flex-col"
             >
-              <div className="w-[38px] h-[38px] rounded-lg bg-[#C9A96E]/5 text-[#C9A96E] font-serif font-bold text-base flex items-center justify-center mx-auto mb-3.5 border border-[#C9A96E]/15">
-                {tech.name.charAt(0)}
+              {/* Stars */}
+              <div className="flex gap-0.5 mb-4">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} size={14} fill="#6366F1" color="#6366F1" />
+                ))}
               </div>
-              <h5 className="text-xs font-semibold text-white mb-1.5">{tech.name}</h5>
-              <p className="text-[10px] text-[#8A7A68]">{tech.desc}</p>
+
+              {/* Quote */}
+              <p className="text-[13px] text-[#A1A1AA] leading-relaxed mb-6 flex-1">
+                &ldquo;{t.text}&rdquo;
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-3 pt-4 border-t border-[rgba(255,255,255,0.06)]">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6366F1] to-[#818CF8] text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  {t.avatar}
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-white">{t.name}</div>
+                  <div className="text-[11px] text-[#71717A]">{t.role} · {t.company}</div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -947,62 +1081,216 @@ function TechStackSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
-//  FAQ Accordion Section [NEW]
-// ─────────────────────────────────────────────────────────
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+// ═══════════════════════════════════════════════════════════
+//  Technical Expertise & Certifications
+// ═══════════════════════════════════════════════════════════
 
-  const toggle = (i: number) => {
-    setOpenIndex(openIndex === i ? null : i);
-  };
+function TechExpertiseSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
 
   return (
-    <section id="faq" className="section-padding border-b border-[rgba(201,169,110,0.15)] bg-[#13100C]">
-      <div className="max-w-[750px] mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <span className="tech-badge mb-4 inline-block">Consultation FAQ</span>
-          <h2 className="text-4xl font-serif font-light text-white mb-4">
-            Frequently Asked <span className="gradient-text italic font-normal">Questions</span>
-          </h2>
-          <p className="text-sm text-[#8A7A68]">
-            Have inquiries regarding our scoping processes, timelines, or intellectual property?
-          </p>
+    <section id="tech" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#0F0F12]">
+      <div className="max-w-[1200px] mx-auto px-6" ref={ref}>
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="mb-10"
+        >
+          <motion.span variants={fadeInUp} className="section-label">Technical Expertise</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Built on a foundation of{' '}
+            <span className="gradient-text">modern engineering</span>
+          </motion.h2>
+          <motion.p variants={fadeInUp} className="text-[15px] max-w-[560px] text-[#71717A]">
+            We use production-proven technologies and follow industry best practices to ensure every system we deliver is maintainable, scalable, and secure.
+          </motion.p>
+        </motion.div>
+
+        {/* Tech Stack Grid by Category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          {Object.entries(TECH_STACK).map(([category, techs], ci) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: ci * 0.1 }}
+              className="glass-card p-5"
+            >
+              <h4 className="text-[11px] uppercase font-semibold tracking-wider text-[#6366F1] mb-4">{category}</h4>
+              <div className="space-y-3">
+                {techs.map((tech) => (
+                  <div key={tech.name} className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-md bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)] flex items-center justify-center text-[11px] font-bold text-[#A1A1AA]">
+                      {tech.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-[12px] font-medium text-white">{tech.name}</div>
+                      <div className="text-[10px] text-[#52525B]">{tech.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Accordions */}
-        <div className="space-y-4">
+        {/* Security Practices & Partnerships */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Security */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="glass-card p-6"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.15)] flex items-center justify-center">
+                <Shield size={18} className="text-[#22C55E]" />
+              </div>
+              <div>
+                <h4 className="text-[14px] font-semibold text-white">Security Practices</h4>
+                <p className="text-[11px] text-[#71717A]">Enterprise-grade security built in</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {['OWASP Compliance', 'Data Encryption', 'JWT/OAuth Auth', 'Pen Testing', 'Access Control', 'Audit Logging'].map((item) => (
+                <div key={item} className="flex items-center gap-2 text-[11px] text-[#A1A1AA]">
+                  <Check size={10} className="text-[#22C55E] flex-shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Partnerships */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="glass-card p-6"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-[rgba(99,102,241,0.08)] border border-[rgba(99,102,241,0.15)] flex items-center justify-center">
+                <Award size={18} className="text-[#6366F1]" />
+              </div>
+              <div>
+                <h4 className="text-[14px] font-semibold text-white">Technology Partnerships</h4>
+                <p className="text-[11px] text-[#71717A]">Certified platforms we deploy on</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {['AWS Cloud Services', 'Vercel Platform', 'Docker Hub', 'GitHub Actions', 'PostgreSQL', 'Stripe Payments'].map((item) => (
+                <div key={item} className="flex items-center gap-2 text-[11px] text-[#A1A1AA]">
+                  <CheckCircle size={10} className="text-[#6366F1] flex-shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Architecture Visual */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-6 glass-card p-6"
+        >
+          <h4 className="text-[11px] uppercase font-semibold tracking-wider text-[#6366F1] mb-5">
+            Typical Production Architecture
+          </h4>
+          <div className="flex flex-col gap-3">
+            {/* Row 1: Client Layer */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {['Web App (Next.js)', 'Mobile App', 'Admin Dashboard'].map((node) => (
+                <div key={node} className="arch-node">{node}</div>
+              ))}
+            </div>
+            <div className="arch-connector mx-auto w-32" />
+            {/* Row 2: API Layer */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {['API Gateway', 'Auth Service', 'Business Logic'].map((node) => (
+                <div key={node} className="arch-node border-[rgba(99,102,241,0.2)]">{node}</div>
+              ))}
+            </div>
+            <div className="arch-connector mx-auto w-32" />
+            {/* Row 3: Data Layer */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {['PostgreSQL', 'Redis Cache', 'File Storage (S3)', 'CDN'].map((node) => (
+                <div key={node} className="arch-node">{node}</div>
+              ))}
+            </div>
+            <div className="arch-connector mx-auto w-32" />
+            {/* Row 4: Infrastructure */}
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {['Docker Containers', 'CI/CD Pipeline', 'Monitoring & Alerts', 'Auto-Scaling'].map((node) => (
+                <div key={node} className="arch-node border-[rgba(34,197,94,0.15)]">{node}</div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FAQ Section
+// ═══════════════════════════════════════════════════════════
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+
+  return (
+    <section id="faq" className="section-padding border-b border-[rgba(255,255,255,0.06)] bg-[#09090B]">
+      <div className="max-w-[800px] mx-auto px-6" ref={ref}>
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="text-center mb-10"
+        >
+          <motion.span variants={fadeInUp} className="section-label justify-center">FAQ</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Questions enterprise buyers{' '}
+            <span className="gradient-text">always ask</span>
+          </motion.h2>
+        </motion.div>
+
+        <div className="space-y-2">
           {FAQS.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
               <div
                 key={i}
-                className="glass-card border border-[rgba(201,169,110,0.12)] rounded-xl overflow-hidden transition-all duration-300"
+                className={`glass-card overflow-hidden transition-all duration-200 ${isOpen ? 'border-[rgba(99,102,241,0.15)]' : ''}`}
               >
-                {/* Trigger */}
                 <button
-                  onClick={() => toggle(i)}
-                  className="w-full text-left p-5 md:p-6 flex justify-between items-center bg-transparent focus:outline-none"
+                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  className="w-full text-left p-5 flex justify-between items-center bg-transparent focus:outline-none group"
                 >
-                  <span className="font-serif text-[#F5ECD7] hover:text-[#C9A96E] text-base md:text-lg transition-colors font-medium">
+                  <span className="text-[14px] font-medium text-white group-hover:text-[#818CF8] transition-colors pr-4">
                     {faq.question}
                   </span>
-                  <div className="text-[#C9A96E] ml-4 flex-shrink-0">
-                    {isOpen ? <X size={16} /> : <HelpCircle size={16} />}
-                  </div>
+                  <ChevronDown
+                    size={16}
+                    className={`text-[#52525B] transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180 text-[#6366F1]' : ''}`}
+                  />
                 </button>
-
-                {/* Content collapsible */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.25 }}
                     >
-                      <div className="p-5 md:p-6 pt-0 border-t border-[rgba(201,169,110,0.08)] text-xs md:text-sm text-[#8A7A68] leading-relaxed">
+                      <div className="px-5 pb-5 text-[13px] text-[#71717A] leading-relaxed border-t border-[rgba(255,255,255,0.04)] pt-4">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -1017,17 +1305,18 @@ function FAQSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  Contact Section
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+
 function ContactSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [formState, setFormState] = useState({ name: '', email: '', phone: '', company: '', service: '', message: '' });
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const [formState, setFormState] = useState({ name: '', email: '', company: '', service: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormState(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormState((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1041,7 +1330,7 @@ function ContactSection() {
       });
       if (res.ok) {
         setStatus('success');
-        setFormState({ name: '', email: '', phone: '', company: '', service: '', message: '' });
+        setFormState({ name: '', email: '', company: '', service: '', message: '' });
       } else {
         setStatus('error');
       }
@@ -1051,86 +1340,71 @@ function ContactSection() {
     setTimeout(() => setStatus('idle'), 5000);
   };
 
-  const inputStyle = {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(201,169,110,0.12)',
-    borderRadius: '6px',
-    color: 'white',
-    padding: '0.875rem 1rem',
-    width: '100%',
-    fontSize: '0.85rem',
-    outline: 'none',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-  };
-
-  const servicesList = [
-    'Web Application Development',
-    'Mobile App Development',
-    'SaaS Product Development',
-    'AI Solutions Integration',
-    'UI/UX Design Strategy',
-    'Cloud & DevOps Solutions'
-  ];
-
   return (
-    <section id="contact" className="section-padding relative overflow-hidden bg-[#0D0A07]">
-      {/* Background glow orbs */}
-      <div className="absolute top-0 left-0 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-[#C9A96E]/5 rounded-full filter blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-0 w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] bg-[#E8D5B0]/3 rounded-full filter blur-[100px] pointer-events-none z-0" />
+    <section id="contact" className="section-padding relative overflow-hidden bg-[#0F0F12]">
+      {/* Background glows */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/[0.03] rounded-full filter blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#818CF8]/[0.02] rounded-full filter blur-[100px] pointer-events-none" />
 
       <div className="max-w-[1200px] mx-auto px-6 relative z-10" ref={ref}>
-        {/* Header */}
         <motion.div
           variants={stagger}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
+          className="mb-10"
         >
-          <motion.span variants={fadeInUp} className="tech-badge mb-4 inline-block">Strategy Call</motion.span>
-          <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-serif font-light text-white mb-4">
-            Let's Build Something <span className="gradient-text italic font-normal">Exceptional</span>
+          <motion.span variants={fadeInUp} className="section-label">Get Started</motion.span>
+          <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            Ready to build something{' '}
+            <span className="gradient-text">production-grade?</span>
           </motion.h2>
-          <p className="text-sm max-w-[500px] mx-auto text-[#8A7A68]">
-            Schedule your complimentary pre-screening session to receive scoping and technical recommendations.
-          </p>
+          <motion.p variants={fadeInUp} className="text-[15px] max-w-[500px] text-[#71717A]">
+            Schedule a free 30-minute architecture review. We'll evaluate your technical requirements and deliver a scoping document within 48 hours.
+          </motion.p>
         </motion.div>
 
-        {/* Content Box */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Info cards */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-3">
             {[
-              { icon: <Mail size={18} />, title: 'Inquiries Email', value: 'True.Solution.21@gmail.com' },
-              { icon: <Phone size={18} />, title: 'Direct Call Line', value: '+91 7415701497' },
-              { icon: <MapPin size={18} />, title: 'Global Office', value: 'indore, india' }
+              { icon: <Mail size={16} />, title: 'Email', value: 'True.Solution.21@gmail.com' },
+              { icon: <Phone size={16} />, title: 'Phone', value: '+91 7415701497' },
+              { icon: <MapPin size={16} />, title: 'Location', value: 'Indore, India' },
             ].map((info, i) => (
-              <div key={i} className="glass-card p-5 border border-[rgba(201,169,110,0.12)] flex items-center gap-4 card-glow">
-                <div className="w-[42px] h-[42px] rounded-lg bg-[#C9A96E]/5 text-[#C9A96E] flex items-center justify-center border border-[#C9A96E]/15">
+              <div key={i} className="glass-card p-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[rgba(99,102,241,0.08)] text-[#6366F1] flex items-center justify-center border border-[rgba(99,102,241,0.15)]">
                   {info.icon}
                 </div>
                 <div>
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-[#8A7A68] mb-0.5">{info.title}</div>
-                  <div className="text-white text-xs md:text-sm font-medium">{info.value}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-[#52525B]">{info.title}</div>
+                  <div className="text-[13px] text-white font-medium">{info.value}</div>
                 </div>
               </div>
             ))}
 
-            {/* Strategy Card */}
-            <div className="glass-card p-6 border border-[rgba(201,169,110,0.15)] bg-gradient-to-br from-[#C9A96E]/5 to-transparent text-center">
-              <Building2 size={28} className="text-[#C9A96E] mx-auto mb-3" />
-              <h5 className="font-serif text-white font-medium text-base mb-1">Free Strategy Scoping</h5>
-              <p className="text-xs text-[#8A7A68] leading-relaxed">
-                Connect with our system architects for 30 minutes to review structural layouts and code frameworks.
-              </p>
+            {/* Value prop card */}
+            <div className="glass-card p-5 border-[rgba(99,102,241,0.1)] bg-[rgba(99,102,241,0.03)]">
+              <div className="flex items-center gap-2 mb-3">
+                <Rocket size={18} className="text-[#6366F1]" />
+                <h5 className="text-[14px] font-semibold text-white">Free Architecture Review</h5>
+              </div>
+              <ul className="space-y-2">
+                {['30-minute technical consultation', 'Scoping document in 48 hours', 'No commitment required'].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-[12px] text-[#A1A1AA]">
+                    <Check size={11} className="text-[#22C55E] flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* Form */}
           <div className="lg:col-span-3">
-            <form onSubmit={handleSubmit} className="glass-card p-6 md:p-8 border border-[rgba(201,169,110,0.12)] space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="glass-card p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7A68] mb-2">Full Name *</label>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">Full Name *</label>
                   <input
                     name="name"
                     type="text"
@@ -1138,13 +1412,11 @@ function ContactSection() {
                     placeholder="John Doe"
                     value={formState.name}
                     onChange={handleChange}
-                    style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#C9A96E'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,169,110,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    className="form-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7A68] mb-2">Email Address *</label>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">Work Email *</label>
                   <input
                     name="email"
                     type="email"
@@ -1152,76 +1424,95 @@ function ContactSection() {
                     placeholder="john@company.com"
                     value={formState.email}
                     onChange={handleChange}
-                    style={inputStyle}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#C9A96E'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,169,110,0.1)'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    className="form-input"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7A68] mb-2">Service Required *</label>
-                <select
-                  name="service"
-                  required
-                  value={formState.service}
-                  onChange={handleChange}
-                  style={{ ...inputStyle, appearance: 'none', cursor: 'pointer' }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#C9A96E'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,169,110,0.1)'; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
-                >
-                  <option value="" style={{ background: '#0D0A07' }}>Select a service category...</option>
-                  {servicesList.map(s => <option key={s} value={s} style={{ background: '#0D0A07' }}>{s}</option>)}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">Company</label>
+                  <input
+                    name="company"
+                    type="text"
+                    placeholder="Acme Inc."
+                    value={formState.company}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">Service *</label>
+                  <select
+                    name="service"
+                    required
+                    value={formState.service}
+                    onChange={handleChange}
+                    className="form-input"
+                    style={{ appearance: 'none', cursor: 'pointer' }}
+                  >
+                    <option value="" style={{ background: '#0F0F12' }}>Select a service...</option>
+                    {['Web Platform', 'Mobile App', 'SaaS Product', 'AI/ML Integration', 'UI/UX Design', 'Cloud & DevOps'].map((s) => (
+                      <option key={s} value={s} style={{ background: '#0F0F12' }}>{s}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-[#8A7A68] mb-2">Message *</label>
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#52525B] mb-1.5">Project Details *</label>
                 <textarea
                   name="message"
                   required
                   rows={4}
-                  placeholder="Outline your application logic constraints and milestones..."
+                  placeholder="Tell us about your project goals, technical requirements, and timeline..."
                   value={formState.message}
                   onChange={handleChange}
-                  style={{ ...inputStyle, resize: 'vertical', minHeight: '90px' }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#C9A96E'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201,169,110,0.1)'; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(201,169,110,0.12)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  className="form-input"
+                  style={{ resize: 'vertical', minHeight: '100px' }}
                 />
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="btn-primary w-full py-4 text-xs font-bold uppercase tracking-[0.08em] inline-flex justify-center items-center gap-2"
+                className="btn-primary w-full py-3.5 text-[13px] font-semibold justify-center gap-2"
                 style={{ opacity: status === 'loading' ? 0.7 : 1 }}
               >
                 {status === 'loading' ? (
                   <>
-                    <span className="animate-spin inline-block w-4 h-4 border-2 border-white/20 border-t-white rounded-full relative z-10" />
-                    <span className="relative z-10">Transmitting...</span>
+                    <span className="animate-spin inline-block w-4 h-4 border-2 border-white/20 border-t-white rounded-full" />
+                    Sending...
                   </>
                 ) : (
                   <>
-                    <span className="relative z-10">Send Message</span>
-                    <Send size={12} className="relative z-10" />
+                    Send Message
+                    <Send size={14} />
                   </>
                 )}
               </button>
 
-              {/* Responses status */}
               <AnimatePresence>
                 {status === 'success' && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg text-xs font-medium">
-                    <CheckCircle size={14} /> Message sent successfully! We will contact you within 24 hours.
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 p-3 bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.15)] text-[#22C55E] rounded-lg text-[12px] font-medium"
+                  >
+                    <CheckCircle size={14} />
+                    Message sent! We'll respond within 24 hours.
                   </motion.div>
                 )}
                 {status === 'error' && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-medium">
-                    <X size={14} /> Something went wrong. Please check inputs or email hello@truesolution.dev
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 p-3 bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.15)] text-[#EF4444] rounded-lg text-[12px] font-medium"
+                  >
+                    <X size={14} />
+                    Something went wrong. Please try again or email us directly.
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1233,71 +1524,56 @@ function ContactSection() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  Footer
-// ─────────────────────────────────────────────────────────
-function Footer() {
-  const linksQuick = ['Services', 'Why Us', 'Projects', 'Process', 'Team', 'FAQ'];
-  const linksServices = [
-    'Web Development',
-    'Mobile Apps',
-    'SaaS Development',
-    'AI Solutions',
-    'UI/UX Design Strategy',
-    'Cloud & DevOps Solutions'
-  ];
+// ═══════════════════════════════════════════════════════════
 
+function Footer() {
   return (
-    <footer style={{ background: '#080604', borderTop: '1px solid rgba(201, 169, 110, 0.12)' }}>
-      <div className="max-w-[1200px] mx-auto px-6 pt-16 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
-          {/* Brand Info */}
+    <footer style={{ background: '#06060A', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="max-w-[1200px] mx-auto px-6 pt-12 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+          {/* Brand */}
           <div>
-            <div className="flex items-center gap-3.5 mb-5">
-              <div className="w-[34px] h-[34px] rounded-lg border border-[#C9A96E] flex items-center justify-center bg-transparent">
-                <span className="text-[#C9A96E] font-serif font-bold text-sm">TS</span>
-              </div>
-              <span className="text-white font-medium text-lg font-serif">
-                True<span className="text-[#C9A96E] italic font-normal ml-0.5">Solution</span>
-              </span>
+            <div className="flex items-start mb-6 md:mb-8 transition-transform duration-300 hover:scale-[1.02] origin-left">
+              <img src="/logo.png" alt="TrueSolution Logo" className="h-16 md:h-20 lg:h-24 w-auto object-contain" />
             </div>
-            <p className="text-xs leading-relaxed text-[#8A7A68] mb-6 max-w-[280px]">
-              Constructing world-class, luxury-tier software applications that drive sustainable business scale.
+            <p className="text-[12px] leading-relaxed text-[#52525B] mb-5 max-w-[260px]">
+              Production-grade software engineering for funded startups, SMBs, and government organizations.
             </p>
-            <div className="flex gap-2">
-              {['LinkedIn', 'GitHub', 'Twitter'].map((social, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="px-3 py-2 rounded border border-[rgba(201,169,110,0.12)] text-[#8A7A68] hover:text-[#C9A96E] hover:border-[#C9A96E]/20 transition-all text-[10px] font-bold uppercase tracking-wider bg-transparent"
-                >
-                  {social}
-                </a>
-              ))}
-            </div>
+
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] text-white mb-5">Quick Links</h4>
-            <ul className="space-y-2.5">
-              {linksQuick.map((link) => (
-                <li key={link}>
-                  <a href={`#${link.replace(/\s+/g, '-').toLowerCase()}`} className="text-xs text-[#8A7A68] hover:text-white transition-colors duration-300">
-                    {link}
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-4">Navigation</h4>
+            <ul className="space-y-2">
+              {[
+                { label: 'Solutions', href: '#services' },
+                { label: 'Case Studies', href: '#case-studies' },
+                { label: 'Process', href: '#process' },
+                { label: 'About', href: '#about' },
+                { label: 'Contact', href: '#contact' },
+              ].map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    className="text-[12px] text-[#52525B] hover:text-white transition-colors"
+                  >
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Services list */}
+          {/* Services */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] text-white mb-5">Services</h4>
-            <ul className="space-y-2.5">
-              {linksServices.map((service) => (
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-4">Services</h4>
+            <ul className="space-y-2">
+              {['Web Platforms', 'Mobile Apps', 'SaaS Products', 'AI Integration', 'UI/UX Design', 'Cloud & DevOps'].map((service) => (
                 <li key={service}>
-                  <a href="#services" className="text-xs text-[#8A7A68] hover:text-white transition-colors duration-300">
+                  <a href="#services" className="text-[12px] text-[#52525B] hover:text-white transition-colors">
                     {service}
                   </a>
                 </li>
@@ -1305,33 +1581,36 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Global contacts */}
+          {/* Contact Info */}
           <div>
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] text-white mb-5">Get In Touch</h4>
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#71717A] mb-4">Contact</h4>
             <div className="space-y-3">
               {[
-                { icon: <Mail size={13} />, value: 'True.Solution.21@gmail.com' },
-                { icon: <Phone size={13} />, value: '+91 7415701497' },
-                { icon: <MapPin size={13} />, value: 'indore, india' }
+                { icon: <Mail size={12} />, value: 'True.Solution.21@gmail.com' },
+                { icon: <Phone size={12} />, value: '+91 7415701497' },
+                { icon: <MapPin size={12} />, value: 'Indore, India' },
               ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2.5">
-                    <div className="mt-0.5 text-[#C9A96E]">{item.icon}</div>
-                    <span className="text-xs text-[#8A7A68]">{item.value}</span>
-                  </div>
-                ))}
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-[#6366F1] mt-0.5">{item.icon}</span>
+                  <span className="text-[12px] text-[#52525B]">{item.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Bottom copyright */}
-        <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-[rgba(201,169,110,0.08)]">
-          <p className="text-[10px] text-[#8A7A68] mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} TrueSolution. All rights reserved. Registered software agency.
+        {/* Bottom */}
+        <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-[rgba(255,255,255,0.04)]">
+          <p className="text-[11px] text-[#3F3F46] mb-3 md:mb-0">
+            &copy; {new Date().getFullYear()} TrueSolution. All rights reserved.
           </p>
           <div className="flex gap-4">
-            {['Privacy Policy', 'Terms of Service'].map((link) => (
-              <a key={link} href="#" className="text-[10px] text-[#8A7A68] hover:text-white transition-colors duration-300">
-                {link}
+            {[
+              { label: 'Privacy Policy', href: '/privacy' },
+              { label: 'Terms of Service', href: '/terms' },
+            ].map((link) => (
+              <a key={link.label} href={link.href} className="text-[11px] text-[#3F3F46] hover:text-[#71717A] transition-colors">
+                {link.label}
               </a>
             ))}
           </div>
@@ -1341,26 +1620,26 @@ function Footer() {
   );
 }
 
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
 //  Root Component
-// ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+
 export default function TrueSolutionWebsite() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#0D0A07] text-[#F5ECD7] font-sans antialiased">
-      {/* Texture noise background */}
+    <div className="min-h-screen overflow-x-hidden bg-[#09090B] text-[#FAFAFA] font-sans antialiased">
       <div className="noise-overlay" />
 
       <Navigation />
 
       <main>
         <HeroSection />
-        <WhyChooseSection />
+        <ClientLogos />
         <ServicesSection />
-        <ProjectsSection />
+        <CaseStudiesSection />
         <ProcessSection />
+        <FounderSection />
         <TestimonialsSection />
-        <TeamSection />
-        <TechStackSection />
+        <TechExpertiseSection />
         <FAQSection />
         <ContactSection />
       </main>
